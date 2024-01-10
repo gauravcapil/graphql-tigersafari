@@ -2,25 +2,38 @@
 
 package model
 
-type Mutation struct {
+type LoginData struct {
+	Token string `json:"token"`
+	Error *int   `json:"error,omitempty"`
 }
 
-type NewTodo struct {
-	Text   string `json:"text"`
-	UserID string `json:"userId"`
+type Mutation struct {
 }
 
 type Query struct {
 }
 
-type Todo struct {
-	ID   string `json:"id"`
-	Text string `json:"text"`
-	Done bool   `json:"done"`
-	User *User  `json:"user"`
+type Sighting struct {
+	SeenAt    string `json:"SeenAt"`
+	SeenAtLat string `json:"SeenAtLat"`
+	SeenAtLon string `json:"SeenAtLon"`
 }
 
-type User struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+type TigerData struct {
+	UserName    string      `json:"userName"`
+	Name        string      `json:"name"`
+	DateOfBirth string      `json:"dateOfBirth"`
+	Sightings   []*Sighting `json:"Sightings"`
+}
+
+type TigerDataLastSeen struct {
+	UserName     string    `json:"userName"`
+	Name         string    `json:"name"`
+	DateOfBirth  string    `json:"dateOfBirth"`
+	LastSighting *Sighting `json:"LastSighting"`
+}
+
+type UserData struct {
+	UserName string `json:"userName"`
+	Email    string `json:"email"`
 }

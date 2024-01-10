@@ -1,28 +1,48 @@
 # GraphQL schema example
 #
 # https://gqlgen.com/getting-started/
+scalar Date
 
-type Todo {
-  id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
+type Sighting {
+  SeenAt: Date!
+  SeenAtLat: Date!
+  SeenAtLon: Date!
 }
 
-type User {
-  id: ID!
+type TigerData {
+  userName: String!
   name: String!
+  dateOfBirth: Date!
+  Sightings: [Sighting]!
+}
+
+
+type TigerDataLastSeen {
+  userName: String!
+  name: String!
+  dateOfBirth: Date!
+  LastSighting: Sighting!
 }
 
 type Query {
-  todos: [Todo!]!
+  listTigers(SortedByLastSeen: Boolean!): [TigerDataLastSeen]!
+  listAllSightings(tiger: String!): [Sighting]!
 }
 
-input NewTodo {
-  text: String!
-  userId: String!
+type UserData {
+  userName: String!
+  email: String!
+}
+
+
+type LoginData {
+  token: String!
+  error: Int
 }
 
 type Mutation {
-  createTodo(input: NewTodo!): Todo!
+  createUser(userName: String!, password: String!, email: String!): UserData!
+  createNewTiger(userName: String!, name: String!, dateOfBirth: Date!, lastSeen: Date!, SeenAtLat: String!, SeenAtLon: String!): Int!
+  createNewSighting(userName: String!, name: String!, SeenAt: Date!, SeenAtLat: String!, SeenAtLon: String!): Int!
+  login(userName: String!, password: String): LoginData!
 }

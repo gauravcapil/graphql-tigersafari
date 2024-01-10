@@ -11,14 +11,34 @@ import (
 	"gaurav.kapil/tigerhall/graph/model"
 )
 
-// CreateTodo is the resolver for the createTodo field.
-func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: CreateTodo - createTodo"))
+// CreateUser is the resolver for the createUser field.
+func (r *mutationResolver) CreateUser(ctx context.Context, userName string, password string, email string) (*model.UserData, error) {
+	panic(fmt.Errorf("not implemented: CreateUser - createUser"))
 }
 
-// Todos is the resolver for the todos field.
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: Todos - todos"))
+// CreateNewTiger is the resolver for the createNewTiger field.
+func (r *mutationResolver) CreateNewTiger(ctx context.Context, userName string, name string, dateOfBirth string, lastSeen string, seenAtLat string, seenAtLon string) (int, error) {
+	panic(fmt.Errorf("not implemented: CreateNewTiger - createNewTiger"))
+}
+
+// CreateNewSighting is the resolver for the createNewSighting field.
+func (r *mutationResolver) CreateNewSighting(ctx context.Context, userName string, name string, seenAt string, seenAtLat string, seenAtLon string) (int, error) {
+	panic(fmt.Errorf("not implemented: CreateNewSighting - createNewSighting"))
+}
+
+// Login is the resolver for the login field.
+func (r *mutationResolver) Login(ctx context.Context, userName string, password *string) (*model.LoginData, error) {
+	panic(fmt.Errorf("not implemented: Login - login"))
+}
+
+// ListTigers is the resolver for the listTigers field.
+func (r *queryResolver) ListTigers(ctx context.Context, sortedByLastSeen bool) ([]*model.TigerDataLastSeen, error) {
+	panic(fmt.Errorf("not implemented: ListTigers - listTigers"))
+}
+
+// ListAllSightings is the resolver for the listAllSightings field.
+func (r *queryResolver) ListAllSightings(ctx context.Context, tiger string) ([]*model.Sighting, error) {
+	panic(fmt.Errorf("not implemented: ListAllSightings - listAllSightings"))
 }
 
 // Mutation returns MutationResolver implementation.
