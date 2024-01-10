@@ -14,9 +14,10 @@ type Query struct {
 }
 
 type Sighting struct {
-	SeenAt    string `json:"SeenAt"`
-	SeenAtLat string `json:"SeenAtLat"`
-	SeenAtLon string `json:"SeenAtLon"`
+	SeenAt        string `json:"SeenAt"`
+	SeenAtLat     string `json:"SeenAtLat"`
+	SeenAtLon     string `json:"SeenAtLon"`
+	PhotoLocation string `json:"PhotoLocation"`
 }
 
 type TigerData struct {

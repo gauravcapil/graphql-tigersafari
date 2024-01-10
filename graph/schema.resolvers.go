@@ -9,6 +9,7 @@ import (
 	"fmt"
 
 	"gaurav.kapil/tigerhall/graph/model"
+	"github.com/99designs/gqlgen/graphql"
 )
 
 // CreateUser is the resolver for the createUser field.
@@ -17,12 +18,12 @@ func (r *mutationResolver) CreateUser(ctx context.Context, userName string, pass
 }
 
 // CreateNewTiger is the resolver for the createNewTiger field.
-func (r *mutationResolver) CreateNewTiger(ctx context.Context, userName string, name string, dateOfBirth string, lastSeen string, seenAtLat string, seenAtLon string) (int, error) {
+func (r *mutationResolver) CreateNewTiger(ctx context.Context, userName string, name string, dateOfBirth string, lastSeen string, seenAtLat string, seenAtLon string, photo graphql.Upload) (int, error) {
 	panic(fmt.Errorf("not implemented: CreateNewTiger - createNewTiger"))
 }
 
 // CreateNewSighting is the resolver for the createNewSighting field.
-func (r *mutationResolver) CreateNewSighting(ctx context.Context, userName string, name string, seenAt string, seenAtLat string, seenAtLon string) (int, error) {
+func (r *mutationResolver) CreateNewSighting(ctx context.Context, userName string, name string, seenAt string, seenAtLat string, seenAtLon string, photo graphql.Upload) (int, error) {
 	panic(fmt.Errorf("not implemented: CreateNewSighting - createNewSighting"))
 }
 

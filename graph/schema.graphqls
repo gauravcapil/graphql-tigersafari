@@ -2,11 +2,14 @@
 #
 # https://gqlgen.com/getting-started/
 scalar Date
+scalar Upload
 
+  
 type Sighting {
   SeenAt: Date!
   SeenAtLat: Date!
   SeenAtLon: Date!
+  PhotoLocation: String!
 }
 
 type TigerData {
@@ -42,7 +45,18 @@ type LoginData {
 
 type Mutation {
   createUser(userName: String!, password: String!, email: String!): UserData!
-  createNewTiger(userName: String!, name: String!, dateOfBirth: Date!, lastSeen: Date!, SeenAtLat: String!, SeenAtLon: String!): Int!
-  createNewSighting(userName: String!, name: String!, SeenAt: Date!, SeenAtLat: String!, SeenAtLon: String!): Int!
+  createNewTiger(userName: String!,
+                  name: String!,
+                  dateOfBirth: Date!,
+                  lastSeen: Date!,
+                  seenAtLat: String!,
+                  seenAtLon: String!,
+                  photo: Upload!): Int!
+  createNewSighting(userName: String!,
+                  name: String!,
+                  seenAt: Date!,
+                  seenAtLat: String!,
+                  seenAtLon: String!
+                  photo: Upload!): Int!
   login(userName: String!, password: String): LoginData!
 }

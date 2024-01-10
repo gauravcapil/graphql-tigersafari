@@ -53,8 +53,8 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateNewSighting func(childComplexity int, userName string, name string, seenAt string, seenAtLat string, seenAtLon string) int
-		CreateNewTiger    func(childComplexity int, userName string, name string, dateOfBirth string, lastSeen string, seenAtLat string, seenAtLon string) int
+		CreateNewSighting func(childComplexity int, userName string, name string, seenAt string, seenAtLat string, seenAtLon string, photo graphql.Upload) int
+		CreateNewTiger    func(childComplexity int, userName string, name string, dateOfBirth string, lastSeen string, seenAtLat string, seenAtLon string, photo graphql.Upload) int
 		CreateUser        func(childComplexity int, userName string, password string, email string) int
 		Login             func(childComplexity int, userName string, password *string) int
 	}
@@ -65,9 +65,10 @@ type ComplexityRoot struct {
 	}
 
 	Sighting struct {
-		SeenAt    func(childComplexity int) int
-		SeenAtLat func(childComplexity int) int
-		SeenAtLon func(childComplexity int) int
+		PhotoLocation func(childComplexity int) int
+		SeenAt        func(childComplexity int) int
+		SeenAtLat     func(childComplexity int) int
+		SeenAtLon     func(childComplexity int) int
 	}
 
 	TigerData struct {
@@ -92,8 +93,8 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	CreateUser(ctx context.Context, userName string, password string, email string) (*model.UserData, error)
-	CreateNewTiger(ctx context.Context, userName string, name string, dateOfBirth string, lastSeen string, seenAtLat string, seenAtLon string) (int, error)
-	CreateNewSighting(ctx context.Context, userName string, name string, seenAt string, seenAtLat string, seenAtLon string) (int, error)
+	CreateNewTiger(ctx context.Context, userName string, name string, dateOfBirth string, lastSeen string, seenAtLat string, seenAtLon string, photo graphql.Upload) (int, error)
+	CreateNewSighting(ctx context.Context, userName string, name string, seenAt string, seenAtLat string, seenAtLon string, photo graphql.Upload) (int, error)
 	Login(ctx context.Context, userName string, password *string) (*model.LoginData, error)
 }
 type QueryResolver interface {
@@ -144,7 +145,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateNewSighting(childComplexity, args["userName"].(string), args["name"].(string), args["SeenAt"].(string), args["SeenAtLat"].(string), args["SeenAtLon"].(string)), true
+		return e.complexity.Mutation.CreateNewSighting(childComplexity, args["userName"].(string), args["name"].(string), args["seenAt"].(string), args["seenAtLat"].(string), args["seenAtLon"].(string), args["photo"].(graphql.Upload)), true
 
 	case "Mutation.createNewTiger":
 		if e.complexity.Mutation.CreateNewTiger == nil {
@@ -156,7 +157,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateNewTiger(childComplexity, args["userName"].(string), args["name"].(string), args["dateOfBirth"].(string), args["lastSeen"].(string), args["SeenAtLat"].(string), args["SeenAtLon"].(string)), true
+		return e.complexity.Mutation.CreateNewTiger(childComplexity, args["userName"].(string), args["name"].(string), args["dateOfBirth"].(string), args["lastSeen"].(string), args["seenAtLat"].(string), args["seenAtLon"].(string), args["photo"].(graphql.Upload)), true
 
 	case "Mutation.createUser":
 		if e.complexity.Mutation.CreateUser == nil {
@@ -205,6 +206,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.ListTigers(childComplexity, args["SortedByLastSeen"].(bool)), true
+
+	case "Sighting.PhotoLocation":
+		if e.complexity.Sighting.PhotoLocation == nil {
+			break
+		}
+
+		return e.complexity.Sighting.PhotoLocation(childComplexity), true
 
 	case "Sighting.SeenAt":
 		if e.complexity.Sighting.SeenAt == nil {
@@ -442,32 +450,41 @@ func (ec *executionContext) field_Mutation_createNewSighting_args(ctx context.Co
 	}
 	args["name"] = arg1
 	var arg2 string
-	if tmp, ok := rawArgs["SeenAt"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("SeenAt"))
+	if tmp, ok := rawArgs["seenAt"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("seenAt"))
 		arg2, err = ec.unmarshalNDate2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["SeenAt"] = arg2
+	args["seenAt"] = arg2
 	var arg3 string
-	if tmp, ok := rawArgs["SeenAtLat"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("SeenAtLat"))
+	if tmp, ok := rawArgs["seenAtLat"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("seenAtLat"))
 		arg3, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["SeenAtLat"] = arg3
+	args["seenAtLat"] = arg3
 	var arg4 string
-	if tmp, ok := rawArgs["SeenAtLon"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("SeenAtLon"))
+	if tmp, ok := rawArgs["seenAtLon"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("seenAtLon"))
 		arg4, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["SeenAtLon"] = arg4
+	args["seenAtLon"] = arg4
+	var arg5 graphql.Upload
+	if tmp, ok := rawArgs["photo"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("photo"))
+		arg5, err = ec.unmarshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["photo"] = arg5
 	return args, nil
 }
 
@@ -511,23 +528,32 @@ func (ec *executionContext) field_Mutation_createNewTiger_args(ctx context.Conte
 	}
 	args["lastSeen"] = arg3
 	var arg4 string
-	if tmp, ok := rawArgs["SeenAtLat"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("SeenAtLat"))
+	if tmp, ok := rawArgs["seenAtLat"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("seenAtLat"))
 		arg4, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["SeenAtLat"] = arg4
+	args["seenAtLat"] = arg4
 	var arg5 string
-	if tmp, ok := rawArgs["SeenAtLon"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("SeenAtLon"))
+	if tmp, ok := rawArgs["seenAtLon"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("seenAtLon"))
 		arg5, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["SeenAtLon"] = arg5
+	args["seenAtLon"] = arg5
+	var arg6 graphql.Upload
+	if tmp, ok := rawArgs["photo"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("photo"))
+		arg6, err = ec.unmarshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["photo"] = arg6
 	return args, nil
 }
 
@@ -831,7 +857,7 @@ func (ec *executionContext) _Mutation_createNewTiger(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateNewTiger(rctx, fc.Args["userName"].(string), fc.Args["name"].(string), fc.Args["dateOfBirth"].(string), fc.Args["lastSeen"].(string), fc.Args["SeenAtLat"].(string), fc.Args["SeenAtLon"].(string))
+		return ec.resolvers.Mutation().CreateNewTiger(rctx, fc.Args["userName"].(string), fc.Args["name"].(string), fc.Args["dateOfBirth"].(string), fc.Args["lastSeen"].(string), fc.Args["seenAtLat"].(string), fc.Args["seenAtLon"].(string), fc.Args["photo"].(graphql.Upload))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -886,7 +912,7 @@ func (ec *executionContext) _Mutation_createNewSighting(ctx context.Context, fie
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateNewSighting(rctx, fc.Args["userName"].(string), fc.Args["name"].(string), fc.Args["SeenAt"].(string), fc.Args["SeenAtLat"].(string), fc.Args["SeenAtLon"].(string))
+		return ec.resolvers.Mutation().CreateNewSighting(rctx, fc.Args["userName"].(string), fc.Args["name"].(string), fc.Args["seenAt"].(string), fc.Args["seenAtLat"].(string), fc.Args["seenAtLon"].(string), fc.Args["photo"].(graphql.Upload))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1098,6 +1124,8 @@ func (ec *executionContext) fieldContext_Query_listAllSightings(ctx context.Cont
 				return ec.fieldContext_Sighting_SeenAtLat(ctx, field)
 			case "SeenAtLon":
 				return ec.fieldContext_Sighting_SeenAtLon(ctx, field)
+			case "PhotoLocation":
+				return ec.fieldContext_Sighting_PhotoLocation(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Sighting", field.Name)
 		},
@@ -1377,6 +1405,50 @@ func (ec *executionContext) fieldContext_Sighting_SeenAtLon(ctx context.Context,
 	return fc, nil
 }
 
+func (ec *executionContext) _Sighting_PhotoLocation(ctx context.Context, field graphql.CollectedField, obj *model.Sighting) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Sighting_PhotoLocation(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PhotoLocation, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Sighting_PhotoLocation(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Sighting",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _TigerData_userName(ctx context.Context, field graphql.CollectedField, obj *model.TigerData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_TigerData_userName(ctx, field)
 	if err != nil {
@@ -1554,6 +1626,8 @@ func (ec *executionContext) fieldContext_TigerData_Sightings(ctx context.Context
 				return ec.fieldContext_Sighting_SeenAtLat(ctx, field)
 			case "SeenAtLon":
 				return ec.fieldContext_Sighting_SeenAtLon(ctx, field)
+			case "PhotoLocation":
+				return ec.fieldContext_Sighting_PhotoLocation(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Sighting", field.Name)
 		},
@@ -1738,6 +1812,8 @@ func (ec *executionContext) fieldContext_TigerDataLastSeen_LastSighting(ctx cont
 				return ec.fieldContext_Sighting_SeenAtLat(ctx, field)
 			case "SeenAtLon":
 				return ec.fieldContext_Sighting_SeenAtLon(ctx, field)
+			case "PhotoLocation":
+				return ec.fieldContext_Sighting_PhotoLocation(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Sighting", field.Name)
 		},
@@ -3845,6 +3921,11 @@ func (ec *executionContext) _Sighting(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "PhotoLocation":
+			out.Values[i] = ec._Sighting_PhotoLocation(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4504,6 +4585,21 @@ func (ec *executionContext) marshalNTigerDataLastSeen2ᚕᚖgauravᚗkapilᚋtig
 	wg.Wait()
 
 	return ret
+}
+
+func (ec *executionContext) unmarshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx context.Context, v interface{}) (graphql.Upload, error) {
+	res, err := graphql.UnmarshalUpload(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx context.Context, sel ast.SelectionSet, v graphql.Upload) graphql.Marshaler {
+	res := graphql.MarshalUpload(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
 }
 
 func (ec *executionContext) marshalNUserData2gauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐUserData(ctx context.Context, sel ast.SelectionSet, v model.UserData) graphql.Marshaler {
