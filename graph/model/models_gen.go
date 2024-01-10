@@ -14,6 +14,8 @@ type Query struct {
 }
 
 type Sighting struct {
+	ID            int    `json:"id"`
+	TigerID       int    `json:"TigerId"`
 	SeenAt        string `json:"SeenAt"`
 	SeenAtLat     string `json:"SeenAtLat"`
 	SeenAtLon     string `json:"SeenAtLon"`
@@ -21,20 +23,19 @@ type Sighting struct {
 }
 
 type TigerData struct {
+	ID          int         `json:"id" gorm:"primary_key"`
 	UserName    string      `json:"userName"`
 	Name        string      `json:"name"`
 	DateOfBirth string      `json:"dateOfBirth"`
-	Sightings   []*Sighting `json:"Sightings"`
-}
-
-type TigerDataLastSeen struct {
-	UserName     string    `json:"userName"`
-	Name         string    `json:"name"`
-	DateOfBirth  string    `json:"dateOfBirth"`
-	LastSighting *Sighting `json:"LastSighting"`
+	Sightings   []*Sighting `json:"Sightings"  gorm:"foreignKey:TigerID;references:ID"`
 }
 
 type UserData struct {
 	UserName string `json:"userName"`
 	Email    string `json:"email"`
+}
+
+type UserDataWithPassword struct {
+	UserName string `json:"userName"`
+	Password string `json:"password"`
 }

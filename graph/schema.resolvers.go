@@ -7,7 +7,10 @@ package graph
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
+	"log"
 
+	"gaurav.kapil/tigerhall/dbutils"
 	"gaurav.kapil/tigerhall/graph/model"
 	"github.com/99designs/gqlgen/graphql"
 )
@@ -19,7 +22,27 @@ func (r *mutationResolver) CreateUser(ctx context.Context, userName string, pass
 
 // CreateNewTiger is the resolver for the createNewTiger field.
 func (r *mutationResolver) CreateNewTiger(ctx context.Context, userName string, name string, dateOfBirth string, lastSeen string, seenAtLat string, seenAtLon string, photo graphql.Upload) (int, error) {
-	panic(fmt.Errorf("not implemented: CreateNewTiger - createNewTiger"))
+	value := dbutils.DbConn.Create(&model.TigerData{
+		UserName:    userName,
+		Name:        name,
+		DateOfBirth: dateOfBirth,
+		Sightings: []*model.Sighting{
+			{SeenAt: lastSeen, SeenAtLat: seenAtLat, SeenAtLon: seenAtLon},
+		},
+	})
+	log.Printf("Inserted ID : %s", value.NowFunc().String())
+	log.Printf("about to upload the file")
+	stream, readErr := ioutil.ReadAll(photo.File)
+	if readErr != nil {
+		fmt.Printf("error from file %v", readErr)
+	}
+	fileName := name + "_" + lastSeen
+	fileErr := ioutil.WriteFile(fileName, stream, 0644)
+	if fileErr != nil {
+		fmt.Printf("file err %v", fileErr)
+	}
+	log.Printf("file writted with name: %s", fileName)
+	return 1, nil
 }
 
 // CreateNewSighting is the resolver for the createNewSighting field.
@@ -33,8 +56,11 @@ func (r *mutationResolver) Login(ctx context.Context, userName string, password 
 }
 
 // ListTigers is the resolver for the listTigers field.
-func (r *queryResolver) ListTigers(ctx context.Context, sortedByLastSeen bool) ([]*model.TigerDataLastSeen, error) {
-	panic(fmt.Errorf("not implemented: ListTigers - listTigers"))
+func (r *queryResolver) ListTigers(ctx context.Context, sortedByLastSeen bool) ([]*model.TigerData, error) {
+	result := []*model.TigerData{}
+	dbutils.DbConn.Model(&model.TigerData{}).Take(&result)
+	log.Printf("listing: %d", len(result))
+	return result, nil
 }
 
 // ListAllSightings is the resolver for the listAllSightings field.

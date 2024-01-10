@@ -6,6 +6,8 @@ scalar Upload
 
   
 type Sighting {
+  id: Int!
+  TigerId: Int!
   SeenAt: Date!
   SeenAtLat: Date!
   SeenAtLon: Date!
@@ -13,6 +15,7 @@ type Sighting {
 }
 
 type TigerData {
+  id: Int!
   userName: String!
   name: String!
   dateOfBirth: Date!
@@ -20,21 +23,19 @@ type TigerData {
 }
 
 
-type TigerDataLastSeen {
-  userName: String!
-  name: String!
-  dateOfBirth: Date!
-  LastSighting: Sighting!
-}
-
 type Query {
-  listTigers(SortedByLastSeen: Boolean!): [TigerDataLastSeen]!
+  listTigers(SortedByLastSeen: Boolean!): [TigerData]!
   listAllSightings(tiger: String!): [Sighting]!
 }
 
 type UserData {
   userName: String!
   email: String!
+}
+
+type UserDataWithPassword {
+  userName: String!
+  password: String!
 }
 
 

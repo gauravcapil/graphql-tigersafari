@@ -65,28 +65,29 @@ type ComplexityRoot struct {
 	}
 
 	Sighting struct {
+		ID            func(childComplexity int) int
 		PhotoLocation func(childComplexity int) int
 		SeenAt        func(childComplexity int) int
 		SeenAtLat     func(childComplexity int) int
 		SeenAtLon     func(childComplexity int) int
+		TigerID       func(childComplexity int) int
 	}
 
 	TigerData struct {
 		DateOfBirth func(childComplexity int) int
+		ID          func(childComplexity int) int
 		Name        func(childComplexity int) int
 		Sightings   func(childComplexity int) int
 		UserName    func(childComplexity int) int
 	}
 
-	TigerDataLastSeen struct {
-		DateOfBirth  func(childComplexity int) int
-		LastSighting func(childComplexity int) int
-		Name         func(childComplexity int) int
-		UserName     func(childComplexity int) int
-	}
-
 	UserData struct {
 		Email    func(childComplexity int) int
+		UserName func(childComplexity int) int
+	}
+
+	UserDataWithPassword struct {
+		Password func(childComplexity int) int
 		UserName func(childComplexity int) int
 	}
 }
@@ -98,7 +99,7 @@ type MutationResolver interface {
 	Login(ctx context.Context, userName string, password *string) (*model.LoginData, error)
 }
 type QueryResolver interface {
-	ListTigers(ctx context.Context, sortedByLastSeen bool) ([]*model.TigerDataLastSeen, error)
+	ListTigers(ctx context.Context, sortedByLastSeen bool) ([]*model.TigerData, error)
 	ListAllSightings(ctx context.Context, tiger string) ([]*model.Sighting, error)
 }
 
@@ -207,6 +208,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.ListTigers(childComplexity, args["SortedByLastSeen"].(bool)), true
 
+	case "Sighting.id":
+		if e.complexity.Sighting.ID == nil {
+			break
+		}
+
+		return e.complexity.Sighting.ID(childComplexity), true
+
 	case "Sighting.PhotoLocation":
 		if e.complexity.Sighting.PhotoLocation == nil {
 			break
@@ -235,12 +243,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Sighting.SeenAtLon(childComplexity), true
 
+	case "Sighting.TigerId":
+		if e.complexity.Sighting.TigerID == nil {
+			break
+		}
+
+		return e.complexity.Sighting.TigerID(childComplexity), true
+
 	case "TigerData.dateOfBirth":
 		if e.complexity.TigerData.DateOfBirth == nil {
 			break
 		}
 
 		return e.complexity.TigerData.DateOfBirth(childComplexity), true
+
+	case "TigerData.id":
+		if e.complexity.TigerData.ID == nil {
+			break
+		}
+
+		return e.complexity.TigerData.ID(childComplexity), true
 
 	case "TigerData.name":
 		if e.complexity.TigerData.Name == nil {
@@ -263,34 +285,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.TigerData.UserName(childComplexity), true
 
-	case "TigerDataLastSeen.dateOfBirth":
-		if e.complexity.TigerDataLastSeen.DateOfBirth == nil {
-			break
-		}
-
-		return e.complexity.TigerDataLastSeen.DateOfBirth(childComplexity), true
-
-	case "TigerDataLastSeen.LastSighting":
-		if e.complexity.TigerDataLastSeen.LastSighting == nil {
-			break
-		}
-
-		return e.complexity.TigerDataLastSeen.LastSighting(childComplexity), true
-
-	case "TigerDataLastSeen.name":
-		if e.complexity.TigerDataLastSeen.Name == nil {
-			break
-		}
-
-		return e.complexity.TigerDataLastSeen.Name(childComplexity), true
-
-	case "TigerDataLastSeen.userName":
-		if e.complexity.TigerDataLastSeen.UserName == nil {
-			break
-		}
-
-		return e.complexity.TigerDataLastSeen.UserName(childComplexity), true
-
 	case "UserData.email":
 		if e.complexity.UserData.Email == nil {
 			break
@@ -304,6 +298,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.UserData.UserName(childComplexity), true
+
+	case "UserDataWithPassword.password":
+		if e.complexity.UserDataWithPassword.Password == nil {
+			break
+		}
+
+		return e.complexity.UserDataWithPassword.Password(childComplexity), true
+
+	case "UserDataWithPassword.userName":
+		if e.complexity.UserDataWithPassword.UserName == nil {
+			break
+		}
+
+		return e.complexity.UserDataWithPassword.UserName(childComplexity), true
 
 	}
 	return 0, false
@@ -1040,9 +1048,9 @@ func (ec *executionContext) _Query_listTigers(ctx context.Context, field graphql
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.TigerDataLastSeen)
+	res := resTmp.([]*model.TigerData)
 	fc.Result = res
-	return ec.marshalNTigerDataLastSeen2ᚕᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐTigerDataLastSeen(ctx, field.Selections, res)
+	return ec.marshalNTigerData2ᚕᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐTigerData(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_listTigers(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1053,16 +1061,18 @@ func (ec *executionContext) fieldContext_Query_listTigers(ctx context.Context, f
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
+			case "id":
+				return ec.fieldContext_TigerData_id(ctx, field)
 			case "userName":
-				return ec.fieldContext_TigerDataLastSeen_userName(ctx, field)
+				return ec.fieldContext_TigerData_userName(ctx, field)
 			case "name":
-				return ec.fieldContext_TigerDataLastSeen_name(ctx, field)
+				return ec.fieldContext_TigerData_name(ctx, field)
 			case "dateOfBirth":
-				return ec.fieldContext_TigerDataLastSeen_dateOfBirth(ctx, field)
-			case "LastSighting":
-				return ec.fieldContext_TigerDataLastSeen_LastSighting(ctx, field)
+				return ec.fieldContext_TigerData_dateOfBirth(ctx, field)
+			case "Sightings":
+				return ec.fieldContext_TigerData_Sightings(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type TigerDataLastSeen", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type TigerData", field.Name)
 		},
 	}
 	defer func() {
@@ -1118,6 +1128,10 @@ func (ec *executionContext) fieldContext_Query_listAllSightings(ctx context.Cont
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
+			case "id":
+				return ec.fieldContext_Sighting_id(ctx, field)
+			case "TigerId":
+				return ec.fieldContext_Sighting_TigerId(ctx, field)
 			case "SeenAt":
 				return ec.fieldContext_Sighting_SeenAt(ctx, field)
 			case "SeenAtLat":
@@ -1268,6 +1282,94 @@ func (ec *executionContext) fieldContext_Query___schema(ctx context.Context, fie
 				return ec.fieldContext___Schema_directives(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Schema", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Sighting_id(ctx context.Context, field graphql.CollectedField, obj *model.Sighting) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Sighting_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Sighting_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Sighting",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Sighting_TigerId(ctx context.Context, field graphql.CollectedField, obj *model.Sighting) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Sighting_TigerId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TigerID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Sighting_TigerId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Sighting",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -1449,6 +1551,50 @@ func (ec *executionContext) fieldContext_Sighting_PhotoLocation(ctx context.Cont
 	return fc, nil
 }
 
+func (ec *executionContext) _TigerData_id(ctx context.Context, field graphql.CollectedField, obj *model.TigerData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_TigerData_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_TigerData_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "TigerData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _TigerData_userName(ctx context.Context, field graphql.CollectedField, obj *model.TigerData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_TigerData_userName(ctx, field)
 	if err != nil {
@@ -1620,192 +1766,10 @@ func (ec *executionContext) fieldContext_TigerData_Sightings(ctx context.Context
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "SeenAt":
-				return ec.fieldContext_Sighting_SeenAt(ctx, field)
-			case "SeenAtLat":
-				return ec.fieldContext_Sighting_SeenAtLat(ctx, field)
-			case "SeenAtLon":
-				return ec.fieldContext_Sighting_SeenAtLon(ctx, field)
-			case "PhotoLocation":
-				return ec.fieldContext_Sighting_PhotoLocation(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Sighting", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _TigerDataLastSeen_userName(ctx context.Context, field graphql.CollectedField, obj *model.TigerDataLastSeen) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_TigerDataLastSeen_userName(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.UserName, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_TigerDataLastSeen_userName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "TigerDataLastSeen",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _TigerDataLastSeen_name(ctx context.Context, field graphql.CollectedField, obj *model.TigerDataLastSeen) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_TigerDataLastSeen_name(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Name, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_TigerDataLastSeen_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "TigerDataLastSeen",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _TigerDataLastSeen_dateOfBirth(ctx context.Context, field graphql.CollectedField, obj *model.TigerDataLastSeen) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_TigerDataLastSeen_dateOfBirth(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.DateOfBirth, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNDate2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_TigerDataLastSeen_dateOfBirth(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "TigerDataLastSeen",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Date does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _TigerDataLastSeen_LastSighting(ctx context.Context, field graphql.CollectedField, obj *model.TigerDataLastSeen) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_TigerDataLastSeen_LastSighting(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.LastSighting, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.Sighting)
-	fc.Result = res
-	return ec.marshalNSighting2ᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐSighting(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_TigerDataLastSeen_LastSighting(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "TigerDataLastSeen",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
+			case "id":
+				return ec.fieldContext_Sighting_id(ctx, field)
+			case "TigerId":
+				return ec.fieldContext_Sighting_TigerId(ctx, field)
 			case "SeenAt":
 				return ec.fieldContext_Sighting_SeenAt(ctx, field)
 			case "SeenAtLat":
@@ -1899,6 +1863,94 @@ func (ec *executionContext) _UserData_email(ctx context.Context, field graphql.C
 func (ec *executionContext) fieldContext_UserData_email(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "UserData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserDataWithPassword_userName(ctx context.Context, field graphql.CollectedField, obj *model.UserDataWithPassword) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserDataWithPassword_userName(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserDataWithPassword_userName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserDataWithPassword",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserDataWithPassword_password(ctx context.Context, field graphql.CollectedField, obj *model.UserDataWithPassword) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserDataWithPassword_password(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Password, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserDataWithPassword_password(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserDataWithPassword",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -3906,6 +3958,16 @@ func (ec *executionContext) _Sighting(ctx context.Context, sel ast.SelectionSet,
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Sighting")
+		case "id":
+			out.Values[i] = ec._Sighting_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "TigerId":
+			out.Values[i] = ec._Sighting_TigerId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "SeenAt":
 			out.Values[i] = ec._Sighting_SeenAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -3960,6 +4022,11 @@ func (ec *executionContext) _TigerData(ctx context.Context, sel ast.SelectionSet
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("TigerData")
+		case "id":
+			out.Values[i] = ec._TigerData_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "userName":
 			out.Values[i] = ec._TigerData_userName(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -3977,60 +4044,6 @@ func (ec *executionContext) _TigerData(ctx context.Context, sel ast.SelectionSet
 			}
 		case "Sightings":
 			out.Values[i] = ec._TigerData_Sightings(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
-var tigerDataLastSeenImplementors = []string{"TigerDataLastSeen"}
-
-func (ec *executionContext) _TigerDataLastSeen(ctx context.Context, sel ast.SelectionSet, obj *model.TigerDataLastSeen) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, tigerDataLastSeenImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("TigerDataLastSeen")
-		case "userName":
-			out.Values[i] = ec._TigerDataLastSeen_userName(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "name":
-			out.Values[i] = ec._TigerDataLastSeen_name(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "dateOfBirth":
-			out.Values[i] = ec._TigerDataLastSeen_dateOfBirth(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "LastSighting":
-			out.Values[i] = ec._TigerDataLastSeen_LastSighting(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -4075,6 +4088,50 @@ func (ec *executionContext) _UserData(ctx context.Context, sel ast.SelectionSet,
 			}
 		case "email":
 			out.Values[i] = ec._UserData_email(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var userDataWithPasswordImplementors = []string{"UserDataWithPassword"}
+
+func (ec *executionContext) _UserDataWithPassword(ctx context.Context, sel ast.SelectionSet, obj *model.UserDataWithPassword) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, userDataWithPasswordImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UserDataWithPassword")
+		case "userName":
+			out.Values[i] = ec._UserDataWithPassword_userName(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "password":
+			out.Values[i] = ec._UserDataWithPassword_password(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -4524,16 +4581,6 @@ func (ec *executionContext) marshalNSighting2ᚕᚖgauravᚗkapilᚋtigerhallᚋ
 	return ret
 }
 
-func (ec *executionContext) marshalNSighting2ᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐSighting(ctx context.Context, sel ast.SelectionSet, v *model.Sighting) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._Sighting(ctx, sel, v)
-}
-
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4549,7 +4596,7 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNTigerDataLastSeen2ᚕᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐTigerDataLastSeen(ctx context.Context, sel ast.SelectionSet, v []*model.TigerDataLastSeen) graphql.Marshaler {
+func (ec *executionContext) marshalNTigerData2ᚕᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐTigerData(ctx context.Context, sel ast.SelectionSet, v []*model.TigerData) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -4573,7 +4620,7 @@ func (ec *executionContext) marshalNTigerDataLastSeen2ᚕᚖgauravᚗkapilᚋtig
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOTigerDataLastSeen2ᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐTigerDataLastSeen(ctx, sel, v[i])
+			ret[i] = ec.marshalOTigerData2ᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐTigerData(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -4934,11 +4981,11 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	return res
 }
 
-func (ec *executionContext) marshalOTigerDataLastSeen2ᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐTigerDataLastSeen(ctx context.Context, sel ast.SelectionSet, v *model.TigerDataLastSeen) graphql.Marshaler {
+func (ec *executionContext) marshalOTigerData2ᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐTigerData(ctx context.Context, sel ast.SelectionSet, v *model.TigerData) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	return ec._TigerDataLastSeen(ctx, sel, v)
+	return ec._TigerData(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {
