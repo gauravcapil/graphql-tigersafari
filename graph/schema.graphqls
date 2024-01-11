@@ -43,6 +43,8 @@ type UserDataWithPassword {
 
 type LoginData {
   token: String!
+  userid: Int!
+  expiration: String!
   error: Int
 }
 

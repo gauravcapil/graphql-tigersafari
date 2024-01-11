@@ -48,8 +48,10 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	LoginData struct {
-		Error func(childComplexity int) int
-		Token func(childComplexity int) int
+		Error      func(childComplexity int) int
+		Expiration func(childComplexity int) int
+		Token      func(childComplexity int) int
+		Userid     func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -131,12 +133,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.LoginData.Error(childComplexity), true
 
+	case "LoginData.expiration":
+		if e.complexity.LoginData.Expiration == nil {
+			break
+		}
+
+		return e.complexity.LoginData.Expiration(childComplexity), true
+
 	case "LoginData.token":
 		if e.complexity.LoginData.Token == nil {
 			break
 		}
 
 		return e.complexity.LoginData.Token(childComplexity), true
+
+	case "LoginData.userid":
+		if e.complexity.LoginData.Userid == nil {
+			break
+		}
+
+		return e.complexity.LoginData.Userid(childComplexity), true
 
 	case "Mutation.createNewSighting":
 		if e.complexity.Mutation.CreateNewSighting == nil {
@@ -765,6 +781,94 @@ func (ec *executionContext) fieldContext_LoginData_token(ctx context.Context, fi
 	return fc, nil
 }
 
+func (ec *executionContext) _LoginData_userid(ctx context.Context, field graphql.CollectedField, obj *model.LoginData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_LoginData_userid(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Userid, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_LoginData_userid(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LoginData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LoginData_expiration(ctx context.Context, field graphql.CollectedField, obj *model.LoginData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_LoginData_expiration(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Expiration, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_LoginData_expiration(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LoginData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _LoginData_error(ctx context.Context, field graphql.CollectedField, obj *model.LoginData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_LoginData_error(ctx, field)
 	if err != nil {
@@ -1020,6 +1124,10 @@ func (ec *executionContext) fieldContext_Mutation_login(ctx context.Context, fie
 			switch field.Name {
 			case "token":
 				return ec.fieldContext_LoginData_token(ctx, field)
+			case "userid":
+				return ec.fieldContext_LoginData_userid(ctx, field)
+			case "expiration":
+				return ec.fieldContext_LoginData_expiration(ctx, field)
 			case "error":
 				return ec.fieldContext_LoginData_error(ctx, field)
 			}
@@ -3861,6 +3969,16 @@ func (ec *executionContext) _LoginData(ctx context.Context, sel ast.SelectionSet
 			out.Values[i] = graphql.MarshalString("LoginData")
 		case "token":
 			out.Values[i] = ec._LoginData_token(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "userid":
+			out.Values[i] = ec._LoginData_userid(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "expiration":
+			out.Values[i] = ec._LoginData_expiration(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

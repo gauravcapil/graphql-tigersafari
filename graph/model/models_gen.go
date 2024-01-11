@@ -3,8 +3,10 @@
 package model
 
 type LoginData struct {
-	Token string `json:"token"`
-	Error *int   `json:"error,omitempty"`
+	Token      string `json:"token"`
+	Userid     int    `json:"userid"`
+	Expiration string `json:"expiration"`
+	Error      *int   `json:"error,omitempty"`
 }
 
 type Mutation struct {

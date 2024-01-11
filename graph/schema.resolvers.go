@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"log"
 
+	"gaurav.kapil/tigerhall/auth"
 	"gaurav.kapil/tigerhall/dbutils"
 	"gaurav.kapil/tigerhall/graph/model"
 	"github.com/99designs/gqlgen/graphql"
@@ -89,7 +90,21 @@ func (r *mutationResolver) CreateNewSighting(ctx context.Context, userName strin
 
 // Login is the resolver for the login field.
 func (r *mutationResolver) Login(ctx context.Context, userName string, password *string) (*model.LoginData, error) {
-	panic(fmt.Errorf("not implemented: Login - login"))
+	result := []*model.UserDataWithPassword{}
+	dbutils.DbConn.Where(&model.UserDataWithPassword{UserName: userName, Password: *password}).First(&result)
+	if len(result) == 0 {
+		return nil, fmt.Errorf("authentication Failed")
+	}
+	token := auth.GenerateSecureToken(255)
+
+	dbutils.DbConn.Where(&model.LoginData{Userid: result[0].ID}).Delete(&model.LoginData{})
+	value := dbutils.DbConn.Create(&model.LoginData{
+		Userid:     result[0].ID,
+		Token:      token,
+		Expiration: "Never", // Periodic Expiration is yet to be implemented
+		Error:      nil,
+	})
+	return value.Statement.Model.(*model.LoginData), nil
 }
 
 // ListTigers is the resolver for the listTigers field.
