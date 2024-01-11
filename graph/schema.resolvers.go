@@ -14,12 +14,10 @@ import (
 	"gaurav.kapil/tigerhall/dbutils"
 	"gaurav.kapil/tigerhall/graph/model"
 	"github.com/99designs/gqlgen/graphql"
-	"gorm.io/gorm/clause"
 )
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, userName string, password string, email string) (*model.UserData, error) {
-
 	result := []*model.UserData{}
 	dbutils.DbConn.Where(&model.UserData{UserName: userName}).First(&result)
 
@@ -46,7 +44,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, userName string, pass
 
 // CreateNewTiger is the resolver for the createNewTiger field.
 func (r *mutationResolver) CreateNewTiger(ctx context.Context, userName string, name string, dateOfBirth string, lastSeen string, seenAtLat string, seenAtLon string, photo graphql.Upload) (int, error) {
-	dbutils.DbConn.Create(&model.TigerData{
+	value := dbutils.DbConn.Create(&model.TigerData{
 		UserName:    userName,
 		Name:        name,
 		DateOfBirth: dateOfBirth,
@@ -59,13 +57,13 @@ func (r *mutationResolver) CreateNewTiger(ctx context.Context, userName string, 
 	if readErr != nil {
 		fmt.Printf("error from file %v", readErr)
 	}
-	fileName := name + "_" + lastSeen
+	fileName := "static/" + name + "_" + lastSeen
 	fileErr := ioutil.WriteFile(fileName, stream, 0644)
 	if fileErr != nil {
 		fmt.Printf("file err %v", fileErr)
 	}
 	log.Printf("file writted with name: %s", fileName)
-	return 1, nil
+	return value.Statement.Model.(model.TigerData).ID, nil
 }
 
 // CreateNewSighting is the resolver for the createNewSighting field.
@@ -73,7 +71,7 @@ func (r *mutationResolver) CreateNewSighting(ctx context.Context, userName strin
 	result := model.TigerData{}
 	dbutils.DbConn.Where(model.TigerData{Name: name}).First(&result)
 
-	value := dbutils.DbConn.Clauses(clause.Returning{}).Select("ID", "TigerID").Create(&model.Sighting{TigerID: result.ID, SeenAt: seenAt, SeenAtLat: seenAtLat, SeenAtLon: seenAtLon})
+	value := dbutils.DbConn.Create(&model.Sighting{TigerID: result.ID, SeenAt: seenAt, SeenAtLat: seenAtLat, SeenAtLon: seenAtLon})
 	log.Printf("about to upload the file")
 	stream, readErr := ioutil.ReadAll(photo.File)
 	if readErr != nil {
@@ -90,15 +88,15 @@ func (r *mutationResolver) CreateNewSighting(ctx context.Context, userName strin
 }
 
 // ListTigers is the resolver for the listTigers field.
-func (r *queryResolver) ListTigers(ctx context.Context, sortedByLastSeen bool) ([]*model.TigerData, error) {
+func (r *queryResolver) ListTigers(ctx context.Context, offset *int, limit *int) ([]*model.TigerData, error) {
 	result := []*model.TigerData{}
-	dbutils.DbConn.Model(&model.TigerData{}).Take(&result)
+	dbutils.DbConn.Where(&model.TigerData{}).Take(&result)
 	log.Printf("listing: %d", len(result))
 	return result, nil
 }
 
 // ListAllSightings is the resolver for the listAllSightings field.
-func (r *queryResolver) ListAllSightings(ctx context.Context, tiger string) ([]*model.Sighting, error) {
+func (r *queryResolver) ListAllSightings(ctx context.Context, tiger string, offset *int, limit *int) ([]*model.Sighting, error) {
 	panic(fmt.Errorf("not implemented: ListAllSightings - listAllSightings"))
 }
 
@@ -119,7 +117,6 @@ func (r *queryResolver) Login(ctx context.Context, userName string, password *st
 		Error:      nil,
 	})
 	return value.Statement.Model.(*model.LoginData), nil
-
 }
 
 // Mutation returns MutationResolver implementation.

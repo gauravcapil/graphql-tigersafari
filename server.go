@@ -23,11 +23,16 @@ func main() {
 		port = defaultPort
 	}
 
+	mux := http.NewServeMux()
+
+	fs := http.FileServer(http.Dir("./static"))
+	mux.Handle("/static", fs)
+
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	mux.Handle("/playground", playground.Handler("GraphQL playground", "/query"))
+	mux.Handle("/query", srv)
 
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Printf("connect to http://localhost:%s/playgrounds for GraphQL playground", port)
+	log.Fatal(http.ListenAndServe(":"+port, mux))
 }

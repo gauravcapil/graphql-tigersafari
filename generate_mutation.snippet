@@ -1,0 +1,8 @@
+
+	case ast.Mutation:
+		token := rc.Headers.Get("Authorization")
+		result := []*model.LoginData{}
+	    dbutils.DbConn.Where(&model.LoginData{Token: token}).First(&result)
+		if len(result) == 0 || token == ""{
+			return graphql.OneShot(graphql.ErrorResponse(ctx, "invalid token"))
+		}

@@ -62,8 +62,8 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		ListAllSightings func(childComplexity int, tiger string) int
-		ListTigers       func(childComplexity int, sortedByLastSeen bool) int
+		ListAllSightings func(childComplexity int, tiger string, offset *int, limit *int) int
+		ListTigers       func(childComplexity int, offset *int, limit *int) int
 		Login            func(childComplexity int, userName string, password *string) int
 	}
 
@@ -103,8 +103,8 @@ type MutationResolver interface {
 	CreateNewSighting(ctx context.Context, userName string, name string, seenAt string, seenAtLat string, seenAtLon string, photo graphql.Upload) (int, error)
 }
 type QueryResolver interface {
-	ListTigers(ctx context.Context, sortedByLastSeen bool) ([]*model.TigerData, error)
-	ListAllSightings(ctx context.Context, tiger string) ([]*model.Sighting, error)
+	ListTigers(ctx context.Context, offset *int, limit *int) ([]*model.TigerData, error)
+	ListAllSightings(ctx context.Context, tiger string, offset *int, limit *int) ([]*model.Sighting, error)
 	Login(ctx context.Context, userName string, password *string) (*model.LoginData, error)
 }
 
@@ -201,7 +201,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.ListAllSightings(childComplexity, args["tiger"].(string)), true
+		return e.complexity.Query.ListAllSightings(childComplexity, args["tiger"].(string), args["offset"].(*int), args["limit"].(*int)), true
 
 	case "Query.listTigers":
 		if e.complexity.Query.ListTigers == nil {
@@ -213,7 +213,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.ListTigers(childComplexity, args["SortedByLastSeen"].(bool)), true
+		return e.complexity.Query.ListTigers(childComplexity, args["offset"].(*int), args["limit"].(*int)), true
 
 	case "Query.login":
 		if e.complexity.Query.Login == nil {
@@ -388,12 +388,18 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 			return &response
 		}
 	case ast.Mutation:
+		t := rc.Operation.SelectionSet[0].(*ast.Field)
+		if t.Name != "createUser" {
+			
 		token := rc.Headers.Get("Authorization")
 		result := []*model.LoginData{}
-	    dbutils.DbConn.Where(&model.LoginData{Token: token}).First(&result)
-		if len(result) == 0 {
-			return graphql.OneShot(graphql.ErrorResponse(ctx, "invalid token"))
+	dbutils.DbConn.Where(&model.LoginData{Token: token}).First(&result)
+		if len(result) == 0 || token == ""{
+				return graphql.OneShot(graphql.ErrorResponse(ctx, "invalid token"))
 		}
+		
+	}
+
 		return func(ctx context.Context) *graphql.Response {
 			if !first {
 				return nil
@@ -664,21 +670,48 @@ func (ec *executionContext) field_Query_listAllSightings_args(ctx context.Contex
 		}
 	}
 	args["tiger"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["offset"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["offset"] = arg1
+	var arg2 *int
+	if tmp, ok := rawArgs["limit"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+		arg2, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["limit"] = arg2
 	return args, nil
 }
 
 func (ec *executionContext) field_Query_listTigers_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 bool
-	if tmp, ok := rawArgs["SortedByLastSeen"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("SortedByLastSeen"))
-		arg0, err = ec.unmarshalNBoolean2bool(ctx, tmp)
+	var arg0 *int
+	if tmp, ok := rawArgs["offset"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
+		arg0, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["SortedByLastSeen"] = arg0
+	args["offset"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["limit"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["limit"] = arg1
 	return args, nil
 }
 
@@ -1104,7 +1137,7 @@ func (ec *executionContext) _Query_listTigers(ctx context.Context, field graphql
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ListTigers(rctx, fc.Args["SortedByLastSeen"].(bool))
+		return ec.resolvers.Query().ListTigers(rctx, fc.Args["offset"].(*int), fc.Args["limit"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1171,7 +1204,7 @@ func (ec *executionContext) _Query_listAllSightings(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ListAllSightings(rctx, fc.Args["tiger"].(string))
+		return ec.resolvers.Query().ListAllSightings(rctx, fc.Args["tiger"].(string), fc.Args["offset"].(*int), fc.Args["limit"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
