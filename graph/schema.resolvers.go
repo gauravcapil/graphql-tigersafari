@@ -13,6 +13,7 @@ import (
 	"gaurav.kapil/tigerhall/dbutils"
 	"gaurav.kapil/tigerhall/graph/model"
 	"github.com/99designs/gqlgen/graphql"
+	"gorm.io/gorm/clause"
 )
 
 // CreateUser is the resolver for the createUser field.
@@ -47,7 +48,24 @@ func (r *mutationResolver) CreateNewTiger(ctx context.Context, userName string, 
 
 // CreateNewSighting is the resolver for the createNewSighting field.
 func (r *mutationResolver) CreateNewSighting(ctx context.Context, userName string, name string, seenAt string, seenAtLat string, seenAtLon string, photo graphql.Upload) (int, error) {
-	panic(fmt.Errorf("not implemented: CreateNewSighting - createNewSighting"))
+
+	result := model.TigerData{}
+	dbutils.DbConn.Model(&model.TigerData{Name: name}).First(&result)
+
+	value := dbutils.DbConn.Clauses(clause.Returning{}).Select("ID", "TigerID").Create(&model.Sighting{TigerID: result.ID, SeenAt: seenAt, SeenAtLat: seenAtLat, SeenAtLon: seenAtLon})
+	log.Printf("about to upload the file")
+	stream, readErr := ioutil.ReadAll(photo.File)
+	if readErr != nil {
+		fmt.Printf("error from file %v", readErr)
+	}
+	fileName := name + "_" + seenAt
+	fileErr := ioutil.WriteFile(fileName, stream, 0644)
+	if fileErr != nil {
+		fmt.Printf("file err %v", fileErr)
+	}
+	log.Printf("file writted with name: %s", fileName)
+	newSightingID := value.Statement.Model.(*model.Sighting).ID
+	return newSightingID, fileErr
 }
 
 // Login is the resolver for the login field.
