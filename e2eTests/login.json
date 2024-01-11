@@ -1,0 +1,1 @@
+{"query":"query{\n  login(userName: \"myusername4\", password : \"somepassword\") {\n    token\n    error\n  }\n}"}

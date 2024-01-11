@@ -19,6 +19,7 @@ import (
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, userName string, password string, email string) (*model.UserData, error) {
+
 	result := []*model.UserData{}
 	dbutils.DbConn.Where(&model.UserData{UserName: userName}).First(&result)
 
@@ -88,8 +89,21 @@ func (r *mutationResolver) CreateNewSighting(ctx context.Context, userName strin
 	return newSightingID, fileErr
 }
 
+// ListTigers is the resolver for the listTigers field.
+func (r *queryResolver) ListTigers(ctx context.Context, sortedByLastSeen bool) ([]*model.TigerData, error) {
+	result := []*model.TigerData{}
+	dbutils.DbConn.Model(&model.TigerData{}).Take(&result)
+	log.Printf("listing: %d", len(result))
+	return result, nil
+}
+
+// ListAllSightings is the resolver for the listAllSightings field.
+func (r *queryResolver) ListAllSightings(ctx context.Context, tiger string) ([]*model.Sighting, error) {
+	panic(fmt.Errorf("not implemented: ListAllSightings - listAllSightings"))
+}
+
 // Login is the resolver for the login field.
-func (r *mutationResolver) Login(ctx context.Context, userName string, password *string) (*model.LoginData, error) {
+func (r *queryResolver) Login(ctx context.Context, userName string, password *string) (*model.LoginData, error) {
 	result := []*model.UserDataWithPassword{}
 	dbutils.DbConn.Where(&model.UserDataWithPassword{UserName: userName, Password: *password}).First(&result)
 	if len(result) == 0 {
@@ -105,19 +119,7 @@ func (r *mutationResolver) Login(ctx context.Context, userName string, password 
 		Error:      nil,
 	})
 	return value.Statement.Model.(*model.LoginData), nil
-}
 
-// ListTigers is the resolver for the listTigers field.
-func (r *queryResolver) ListTigers(ctx context.Context, sortedByLastSeen bool) ([]*model.TigerData, error) {
-	result := []*model.TigerData{}
-	dbutils.DbConn.Model(&model.TigerData{}).Take(&result)
-	log.Printf("listing: %d", len(result))
-	return result, nil
-}
-
-// ListAllSightings is the resolver for the listAllSightings field.
-func (r *queryResolver) ListAllSightings(ctx context.Context, tiger string) ([]*model.Sighting, error) {
-	panic(fmt.Errorf("not implemented: ListAllSightings - listAllSightings"))
 }
 
 // Mutation returns MutationResolver implementation.

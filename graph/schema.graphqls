@@ -26,6 +26,7 @@ type TigerData {
 type Query {
   listTigers(SortedByLastSeen: Boolean!): [TigerData]!
   listAllSightings(tiger: String!): [Sighting]!
+  login(userName: String!, password: String): LoginData!
 }
 
 type UserData {
@@ -63,5 +64,4 @@ type Mutation {
                   seenAtLat: String!,
                   seenAtLon: String!
                   photo: Upload!): Int!
-  login(userName: String!, password: String): LoginData!
 }
