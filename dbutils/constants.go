@@ -2,9 +2,11 @@ package dbutils
 
 import "os"
 
+var PhotoFolder = "photos"
+
 func GetPhotoDir() string {
 	wd, _ := os.Getwd()
-	return wd + "\\photos"
+	return wd + "\\" + PhotoFolder
 }
 
 var Offset = 0

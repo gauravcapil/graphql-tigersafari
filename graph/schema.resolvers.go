@@ -47,12 +47,14 @@ func (r *mutationResolver) CreateNewTiger(ctx context.Context, userName string, 
 	if err := auth.Authenticate(ctx); err != nil {
 		return 0, err
 	}
+	photolink := name + "_" + lastSeen
 	value := dbutils.DbConn.Create(&model.TigerData{
 		UserName:    userName,
 		Name:        name,
 		DateOfBirth: dateOfBirth,
 		Sightings: []*model.Sighting{
-			{SeenAt: lastSeen, SeenAtLat: seenAtLat, SeenAtLon: seenAtLon},
+			{SeenAt: lastSeen, SeenAtLat: seenAtLat, SeenAtLon: seenAtLon,
+				PhotoLocation: dbutils.PhotoFolder + photolink},
 		},
 	})
 	log.Printf("about to upload the file")
@@ -60,7 +62,7 @@ func (r *mutationResolver) CreateNewTiger(ctx context.Context, userName string, 
 	if readErr != nil {
 		fmt.Printf("error from file %v", readErr)
 	}
-	fileName := dbutils.GetPhotoDir() + "/" + name + "_" + lastSeen
+	fileName := dbutils.GetPhotoDir() + "/" + photolink
 	fileErr := ioutil.WriteFile(fileName, stream, 0644)
 	if fileErr != nil {
 		fmt.Printf("file err %v", fileErr)
@@ -76,14 +78,14 @@ func (r *mutationResolver) CreateNewSighting(ctx context.Context, userName strin
 	}
 	result := model.TigerData{}
 	dbutils.DbConn.Where(model.TigerData{Name: name}).First(&result)
-
-	value := dbutils.DbConn.Create(&model.Sighting{TigerID: result.ID, SeenAt: seenAt, SeenAtLat: seenAtLat, SeenAtLon: seenAtLon})
+	photolink := name + "_" + seenAt
+	value := dbutils.DbConn.Create(&model.Sighting{TigerID: result.ID, SeenAt: seenAt, SeenAtLat: seenAtLat, SeenAtLon: seenAtLon, PhotoLocation: dbutils.PhotoFolder + photolink})
 	log.Printf("about to upload the file")
 	stream, readErr := ioutil.ReadAll(photo.File)
 	if readErr != nil {
 		fmt.Printf("error from file %v", readErr)
 	}
-	fileName := dbutils.GetPhotoDir() + "/" + name + "_" + seenAt
+	fileName := dbutils.GetPhotoDir() + "/" + photolink
 	fileErr := ioutil.WriteFile(fileName, stream, 0644)
 	if fileErr != nil {
 		fmt.Printf("file err %v", fileErr)
