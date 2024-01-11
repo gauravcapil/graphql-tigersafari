@@ -29,11 +29,13 @@ type Query {
 }
 
 type UserData {
+  id: Int!
   userName: String!
   email: String!
 }
 
 type UserDataWithPassword {
+  id: Int!
   userName: String!
   password: String!
 }

@@ -25,17 +25,19 @@ type Sighting struct {
 type TigerData struct {
 	ID          int         `json:"id" gorm:"primary_key"`
 	UserName    string      `json:"userName"`
-	Name        string      `json:"name"`
+	Name        string      `json:"name"  gorm:"uniqueIndex"`
 	DateOfBirth string      `json:"dateOfBirth"`
 	Sightings   []*Sighting `json:"Sightings"  gorm:"foreignKey:TigerID;references:ID"`
 }
 
 type UserData struct {
-	UserName string `json:"userName"`
-	Email    string `json:"email"`
+	ID       int    `json:"id"  gorm:"primary_key"`
+	UserName string `json:"userName"  gorm:"uniqueIndex"`
+	Email    string `json:"email" gorm:"uniqueIndex"`
 }
 
 type UserDataWithPassword struct {
-	UserName string `json:"userName"`
+	ID       int    `json:"id"  gorm:"primary_key"`
+	UserName string `json:"userName"  gorm:"uniqueIndex"`
 	Password string `json:"password"`
 }

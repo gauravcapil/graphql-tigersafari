@@ -1,0 +1,2 @@
+{"query":"mutation {\n  createUser(userName:\"myusername10\",\n    email: \"sample10@gmail.com\",\n    password: \"somepassword\") {\n    userName\n    email\n  }\n}"}
+

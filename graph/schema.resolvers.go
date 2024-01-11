@@ -18,12 +18,33 @@ import (
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, userName string, password string, email string) (*model.UserData, error) {
-	panic(fmt.Errorf("not implemented: CreateUser - createUser"))
+	result := []*model.UserData{}
+	dbutils.DbConn.Where(&model.UserData{UserName: userName}).First(&result)
+
+	if len(result) != 0 {
+		return nil, fmt.Errorf("user already exists with username: %s ", userName)
+	}
+
+	dbutils.DbConn.Where(model.UserData{Email: email}).First(&result)
+
+	if len(result) != 0 {
+		return nil, fmt.Errorf("user already exists with email: %s", email)
+	}
+
+	dbutils.DbConn.Create(&model.UserDataWithPassword{
+		UserName: userName,
+		Password: password,
+	})
+	value := dbutils.DbConn.Create(&model.UserData{
+		UserName: userName,
+		Email:    email,
+	})
+	return value.Statement.Model.(*model.UserData), nil
 }
 
 // CreateNewTiger is the resolver for the createNewTiger field.
 func (r *mutationResolver) CreateNewTiger(ctx context.Context, userName string, name string, dateOfBirth string, lastSeen string, seenAtLat string, seenAtLon string, photo graphql.Upload) (int, error) {
-	value := dbutils.DbConn.Create(&model.TigerData{
+	dbutils.DbConn.Create(&model.TigerData{
 		UserName:    userName,
 		Name:        name,
 		DateOfBirth: dateOfBirth,
@@ -31,7 +52,6 @@ func (r *mutationResolver) CreateNewTiger(ctx context.Context, userName string, 
 			{SeenAt: lastSeen, SeenAtLat: seenAtLat, SeenAtLon: seenAtLon},
 		},
 	})
-	log.Printf("Inserted ID : %s", value.NowFunc().String())
 	log.Printf("about to upload the file")
 	stream, readErr := ioutil.ReadAll(photo.File)
 	if readErr != nil {
@@ -48,9 +68,8 @@ func (r *mutationResolver) CreateNewTiger(ctx context.Context, userName string, 
 
 // CreateNewSighting is the resolver for the createNewSighting field.
 func (r *mutationResolver) CreateNewSighting(ctx context.Context, userName string, name string, seenAt string, seenAtLat string, seenAtLon string, photo graphql.Upload) (int, error) {
-
 	result := model.TigerData{}
-	dbutils.DbConn.Model(&model.TigerData{Name: name}).First(&result)
+	dbutils.DbConn.Where(model.TigerData{Name: name}).First(&result)
 
 	value := dbutils.DbConn.Clauses(clause.Returning{}).Select("ID", "TigerID").Create(&model.Sighting{TigerID: result.ID, SeenAt: seenAt, SeenAtLat: seenAtLat, SeenAtLon: seenAtLon})
 	log.Printf("about to upload the file")

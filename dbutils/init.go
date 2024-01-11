@@ -37,6 +37,7 @@ func Migration_1() {
 	DbConn.Migrator().CreateTable(model.Sighting{})
 	DbConn.Migrator().CreateTable(model.LoginData{})
 	DbConn.Migrator().CreateTable(model.UserDataWithPassword{})
+	DbConn.Migrator().CreateTable(model.UserData{})
 	log.Printf("(Migration_1) has finished.")
 }
 
@@ -46,5 +47,6 @@ func Migration_Dropall() {
 	DbConn.Migrator().DropTable(model.Sighting{})
 	DbConn.Migrator().DropTable(model.LoginData{})
 	DbConn.Migrator().DropTable(model.UserDataWithPassword{})
+	DbConn.Migrator().DropTable(model.UserData{})
 	log.Printf("(Migration_2) has finished.")
 }
