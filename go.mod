@@ -4,6 +4,7 @@ go 1.21.6
 
 require (
 	github.com/99designs/gqlgen v0.17.42
+	github.com/go-chi/chi v1.5.5
 	github.com/vektah/gqlparser/v2 v2.5.10
 	gorm.io/driver/postgres v1.5.4
 	gorm.io/gorm v1.25.5

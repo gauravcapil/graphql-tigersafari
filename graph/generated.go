@@ -13,7 +13,6 @@ import (
 	"sync/atomic"
 
 	"gaurav.kapil/tigerhall/graph/model"
-	"gaurav.kapil/tigerhall/dbutils"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	gqlparser "github.com/vektah/gqlparser/v2"
@@ -388,18 +387,6 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 			return &response
 		}
 	case ast.Mutation:
-		t := rc.Operation.SelectionSet[0].(*ast.Field)
-		if t.Name != "createUser" {
-			
-		token := rc.Headers.Get("Authorization")
-		result := []*model.LoginData{}
-	dbutils.DbConn.Where(&model.LoginData{Token: token}).First(&result)
-		if len(result) == 0 || token == ""{
-				return graphql.OneShot(graphql.ErrorResponse(ctx, "invalid token"))
-		}
-		
-	}
-
 		return func(ctx context.Context) *graphql.Response {
 			if !first {
 				return nil

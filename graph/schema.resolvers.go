@@ -44,6 +44,9 @@ func (r *mutationResolver) CreateUser(ctx context.Context, userName string, pass
 
 // CreateNewTiger is the resolver for the createNewTiger field.
 func (r *mutationResolver) CreateNewTiger(ctx context.Context, userName string, name string, dateOfBirth string, lastSeen string, seenAtLat string, seenAtLon string, photo graphql.Upload) (int, error) {
+	if err := auth.Authenticate(ctx); err != nil {
+		return 0, err
+	}
 	value := dbutils.DbConn.Create(&model.TigerData{
 		UserName:    userName,
 		Name:        name,
@@ -63,11 +66,14 @@ func (r *mutationResolver) CreateNewTiger(ctx context.Context, userName string, 
 		fmt.Printf("file err %v", fileErr)
 	}
 	log.Printf("file writted with name: %s", fileName)
-	return value.Statement.Model.(model.TigerData).ID, nil
+	return value.Statement.Model.(*model.TigerData).ID, nil
 }
 
 // CreateNewSighting is the resolver for the createNewSighting field.
 func (r *mutationResolver) CreateNewSighting(ctx context.Context, userName string, name string, seenAt string, seenAtLat string, seenAtLon string, photo graphql.Upload) (int, error) {
+	if err := auth.Authenticate(ctx); err != nil {
+		return 0, err
+	}
 	result := model.TigerData{}
 	dbutils.DbConn.Where(model.TigerData{Name: name}).First(&result)
 

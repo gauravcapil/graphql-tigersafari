@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/go-chi/chi"
+
+	"gaurav.kapil/tigerhall/auth"
 	"gaurav.kapil/tigerhall/dbutils"
 	"gaurav.kapil/tigerhall/graph"
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -23,16 +26,14 @@ func main() {
 		port = defaultPort
 	}
 
-	mux := http.NewServeMux()
+	router := chi.NewRouter()
 
-	fs := http.FileServer(http.Dir("./static"))
-	mux.Handle("/static", fs)
+	router.Use(auth.Middleware())
 
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
-
-	mux.Handle("/playground", playground.Handler("GraphQL playground", "/query"))
-	mux.Handle("/query", srv)
+	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	router.Handle("/query", srv)
 
 	log.Printf("connect to http://localhost:%s/playgrounds for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, mux))
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }
