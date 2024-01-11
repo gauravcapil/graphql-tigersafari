@@ -33,6 +33,7 @@ func main() {
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
 	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	router.Handle("/query", srv)
+	router.Handle("/photos/*", http.StripPrefix("/photos/", http.FileServer(http.Dir(dbutils.GetPhotoDir()))))
 
 	log.Printf("connect to http://localhost:%s/playgrounds for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, router))

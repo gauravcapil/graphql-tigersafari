@@ -61,7 +61,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		ListAllSightings func(childComplexity int, tiger string, offset *int, limit *int) int
+		ListAllSightings func(childComplexity int, tigerID int, offset *int, limit *int) int
 		ListTigers       func(childComplexity int, offset *int, limit *int) int
 		Login            func(childComplexity int, userName string, password *string) int
 	}
@@ -103,7 +103,7 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	ListTigers(ctx context.Context, offset *int, limit *int) ([]*model.TigerData, error)
-	ListAllSightings(ctx context.Context, tiger string, offset *int, limit *int) ([]*model.Sighting, error)
+	ListAllSightings(ctx context.Context, tigerID int, offset *int, limit *int) ([]*model.Sighting, error)
 	Login(ctx context.Context, userName string, password *string) (*model.LoginData, error)
 }
 
@@ -200,7 +200,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.ListAllSightings(childComplexity, args["tiger"].(string), args["offset"].(*int), args["limit"].(*int)), true
+		return e.complexity.Query.ListAllSightings(childComplexity, args["tigerId"].(int), args["offset"].(*int), args["limit"].(*int)), true
 
 	case "Query.listTigers":
 		if e.complexity.Query.ListTigers == nil {
@@ -648,15 +648,15 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_listAllSightings_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["tiger"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tiger"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+	var arg0 int
+	if tmp, ok := rawArgs["tigerId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tigerId"))
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["tiger"] = arg0
+	args["tigerId"] = arg0
 	var arg1 *int
 	if tmp, ok := rawArgs["offset"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
@@ -1191,7 +1191,7 @@ func (ec *executionContext) _Query_listAllSightings(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ListAllSightings(rctx, fc.Args["tiger"].(string), fc.Args["offset"].(*int), fc.Args["limit"].(*int))
+		return ec.resolvers.Query().ListAllSightings(rctx, fc.Args["tigerId"].(int), fc.Args["offset"].(*int), fc.Args["limit"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

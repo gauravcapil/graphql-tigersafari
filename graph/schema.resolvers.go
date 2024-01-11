@@ -60,7 +60,7 @@ func (r *mutationResolver) CreateNewTiger(ctx context.Context, userName string, 
 	if readErr != nil {
 		fmt.Printf("error from file %v", readErr)
 	}
-	fileName := "static/" + name + "_" + lastSeen
+	fileName := dbutils.GetPhotoDir() + "/" + name + "_" + lastSeen
 	fileErr := ioutil.WriteFile(fileName, stream, 0644)
 	if fileErr != nil {
 		fmt.Printf("file err %v", fileErr)
@@ -83,7 +83,7 @@ func (r *mutationResolver) CreateNewSighting(ctx context.Context, userName strin
 	if readErr != nil {
 		fmt.Printf("error from file %v", readErr)
 	}
-	fileName := name + "_" + seenAt
+	fileName := dbutils.GetPhotoDir() + "/" + name + "_" + seenAt
 	fileErr := ioutil.WriteFile(fileName, stream, 0644)
 	if fileErr != nil {
 		fmt.Printf("file err %v", fileErr)
@@ -96,14 +96,19 @@ func (r *mutationResolver) CreateNewSighting(ctx context.Context, userName strin
 // ListTigers is the resolver for the listTigers field.
 func (r *queryResolver) ListTigers(ctx context.Context, offset *int, limit *int) ([]*model.TigerData, error) {
 	result := []*model.TigerData{}
-	dbutils.DbConn.Where(&model.TigerData{}).Take(&result)
+	dbutils.SetDefaults(&offset, &limit)
+	dbutils.DbConn.Offset(*offset).Limit(*limit).Find(&result)
 	log.Printf("listing: %d", len(result))
 	return result, nil
 }
 
 // ListAllSightings is the resolver for the listAllSightings field.
-func (r *queryResolver) ListAllSightings(ctx context.Context, tiger string, offset *int, limit *int) ([]*model.Sighting, error) {
-	panic(fmt.Errorf("not implemented: ListAllSightings - listAllSightings"))
+func (r *queryResolver) ListAllSightings(ctx context.Context, tigerID int, offset *int, limit *int) ([]*model.Sighting, error) {
+	result := []*model.Sighting{}
+	dbutils.SetDefaults(&offset, &limit)
+	dbutils.DbConn.Offset(*offset).Limit(*limit).Find(&result, model.Sighting{TigerID: tigerID})
+	log.Printf("listing: %d", len(result))
+	return result, nil
 }
 
 // Login is the resolver for the login field.

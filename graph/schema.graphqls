@@ -25,7 +25,7 @@ type TigerData {
 
 type Query {
   listTigers(offset: Int,limit: Int): [TigerData]!
-  listAllSightings(tiger: String!,offset: Int,limit: Int): [Sighting]!
+  listAllSightings(tigerId: Int!,offset: Int,limit: Int): [Sighting]!
   login(userName: String!, password: String): LoginData!
 }
 
