@@ -7,6 +7,7 @@ import (
 	"context"
 	"embed"
 	"errors"
+	"time"
 	"fmt"
 	"strconv"
 	"sync"
@@ -4775,8 +4776,25 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+
+func unmarshalNDateTime2string(v interface{}) (string, error) {
+	switch v := v.(type) {
+	case string:
+		_, err := time.Parse("2006-01-02 15:04:05.999", v)
+	    if err != nil {
+        	return "", fmt.Errorf("%T is not a DateTime string", v)
+    	}
+		return v, nil
+	case nil:
+		return "null", nil
+	default:
+		return "", fmt.Errorf("%T is not a string", v)
+	}
+}
+
+
 func (ec *executionContext) unmarshalNDateTime2string(ctx context.Context, v interface{}) (string, error) {
-	res, err := graphql.UnmarshalString(v)
+	res, err := unmarshalNDateTime2string(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
