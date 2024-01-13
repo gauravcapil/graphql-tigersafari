@@ -55,8 +55,8 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateNewSighting func(childComplexity int, userName string, name string, seenAt string, seenAtLat string, seenAtLon string, photo graphql.Upload) int
-		CreateNewTiger    func(childComplexity int, userName string, name string, dateOfBirth string, lastSeen string, seenAtLat string, seenAtLon string, photo graphql.Upload) int
+		CreateNewSighting func(childComplexity int, userName string, name string, seenAt string, seenAtLat float64, seenAtLon float64, photo graphql.Upload) int
+		CreateNewTiger    func(childComplexity int, userName string, name string, dateOfBirth string, lastSeen string, seenAtLat float64, seenAtLon float64, photo graphql.Upload) int
 		CreateUser        func(childComplexity int, userName string, password string, email string) int
 	}
 
@@ -98,8 +98,8 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	CreateUser(ctx context.Context, userName string, password string, email string) (*model.UserData, error)
-	CreateNewTiger(ctx context.Context, userName string, name string, dateOfBirth string, lastSeen string, seenAtLat string, seenAtLon string, photo graphql.Upload) (int, error)
-	CreateNewSighting(ctx context.Context, userName string, name string, seenAt string, seenAtLat string, seenAtLon string, photo graphql.Upload) (int, error)
+	CreateNewTiger(ctx context.Context, userName string, name string, dateOfBirth string, lastSeen string, seenAtLat float64, seenAtLon float64, photo graphql.Upload) (int, error)
+	CreateNewSighting(ctx context.Context, userName string, name string, seenAt string, seenAtLat float64, seenAtLon float64, photo graphql.Upload) (int, error)
 }
 type QueryResolver interface {
 	ListTigers(ctx context.Context, offset *int, limit *int) ([]*model.TigerData, error)
@@ -164,7 +164,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateNewSighting(childComplexity, args["userName"].(string), args["name"].(string), args["seenAt"].(string), args["seenAtLat"].(string), args["seenAtLon"].(string), args["photo"].(graphql.Upload)), true
+		return e.complexity.Mutation.CreateNewSighting(childComplexity, args["userName"].(string), args["name"].(string), args["seenAt"].(string), args["seenAtLat"].(float64), args["seenAtLon"].(float64), args["photo"].(graphql.Upload)), true
 
 	case "Mutation.createNewTiger":
 		if e.complexity.Mutation.CreateNewTiger == nil {
@@ -176,7 +176,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateNewTiger(childComplexity, args["userName"].(string), args["name"].(string), args["dateOfBirth"].(string), args["lastSeen"].(string), args["seenAtLat"].(string), args["seenAtLon"].(string), args["photo"].(graphql.Upload)), true
+		return e.complexity.Mutation.CreateNewTiger(childComplexity, args["userName"].(string), args["name"].(string), args["dateOfBirth"].(string), args["lastSeen"].(string), args["seenAtLat"].(float64), args["seenAtLon"].(float64), args["photo"].(graphql.Upload)), true
 
 	case "Mutation.createUser":
 		if e.complexity.Mutation.CreateUser == nil {
@@ -492,25 +492,25 @@ func (ec *executionContext) field_Mutation_createNewSighting_args(ctx context.Co
 	var arg2 string
 	if tmp, ok := rawArgs["seenAt"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("seenAt"))
-		arg2, err = ec.unmarshalNDate2string(ctx, tmp)
+		arg2, err = ec.unmarshalNDateTime2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
 	args["seenAt"] = arg2
-	var arg3 string
+	var arg3 float64
 	if tmp, ok := rawArgs["seenAtLat"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("seenAtLat"))
-		arg3, err = ec.unmarshalNString2string(ctx, tmp)
+		arg3, err = ec.unmarshalNFloat2float64(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
 	args["seenAtLat"] = arg3
-	var arg4 string
+	var arg4 float64
 	if tmp, ok := rawArgs["seenAtLon"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("seenAtLon"))
-		arg4, err = ec.unmarshalNString2string(ctx, tmp)
+		arg4, err = ec.unmarshalNFloat2float64(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -552,7 +552,7 @@ func (ec *executionContext) field_Mutation_createNewTiger_args(ctx context.Conte
 	var arg2 string
 	if tmp, ok := rawArgs["dateOfBirth"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dateOfBirth"))
-		arg2, err = ec.unmarshalNDate2string(ctx, tmp)
+		arg2, err = ec.unmarshalNDateTime2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -561,25 +561,25 @@ func (ec *executionContext) field_Mutation_createNewTiger_args(ctx context.Conte
 	var arg3 string
 	if tmp, ok := rawArgs["lastSeen"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastSeen"))
-		arg3, err = ec.unmarshalNDate2string(ctx, tmp)
+		arg3, err = ec.unmarshalNDateTime2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
 	args["lastSeen"] = arg3
-	var arg4 string
+	var arg4 float64
 	if tmp, ok := rawArgs["seenAtLat"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("seenAtLat"))
-		arg4, err = ec.unmarshalNString2string(ctx, tmp)
+		arg4, err = ec.unmarshalNFloat2float64(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
 	args["seenAtLat"] = arg4
-	var arg5 string
+	var arg5 float64
 	if tmp, ok := rawArgs["seenAtLon"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("seenAtLon"))
-		arg5, err = ec.unmarshalNString2string(ctx, tmp)
+		arg5, err = ec.unmarshalNFloat2float64(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1014,7 +1014,7 @@ func (ec *executionContext) _Mutation_createNewTiger(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateNewTiger(rctx, fc.Args["userName"].(string), fc.Args["name"].(string), fc.Args["dateOfBirth"].(string), fc.Args["lastSeen"].(string), fc.Args["seenAtLat"].(string), fc.Args["seenAtLon"].(string), fc.Args["photo"].(graphql.Upload))
+		return ec.resolvers.Mutation().CreateNewTiger(rctx, fc.Args["userName"].(string), fc.Args["name"].(string), fc.Args["dateOfBirth"].(string), fc.Args["lastSeen"].(string), fc.Args["seenAtLat"].(float64), fc.Args["seenAtLon"].(float64), fc.Args["photo"].(graphql.Upload))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1069,7 +1069,7 @@ func (ec *executionContext) _Mutation_createNewSighting(ctx context.Context, fie
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateNewSighting(rctx, fc.Args["userName"].(string), fc.Args["name"].(string), fc.Args["seenAt"].(string), fc.Args["seenAtLat"].(string), fc.Args["seenAtLon"].(string), fc.Args["photo"].(graphql.Upload))
+		return ec.resolvers.Mutation().CreateNewSighting(rctx, fc.Args["userName"].(string), fc.Args["name"].(string), fc.Args["seenAt"].(string), fc.Args["seenAtLat"].(float64), fc.Args["seenAtLon"].(float64), fc.Args["photo"].(graphql.Upload))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1556,7 +1556,7 @@ func (ec *executionContext) _Sighting_SeenAt(ctx context.Context, field graphql.
 	}
 	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNDate2string(ctx, field.Selections, res)
+	return ec.marshalNDateTime2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Sighting_SeenAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1566,7 +1566,7 @@ func (ec *executionContext) fieldContext_Sighting_SeenAt(ctx context.Context, fi
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Date does not have child fields")
+			return nil, errors.New("field of type DateTime does not have child fields")
 		},
 	}
 	return fc, nil
@@ -1598,9 +1598,9 @@ func (ec *executionContext) _Sighting_SeenAtLat(ctx context.Context, field graph
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(float64)
 	fc.Result = res
-	return ec.marshalNDate2string(ctx, field.Selections, res)
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Sighting_SeenAtLat(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1610,7 +1610,7 @@ func (ec *executionContext) fieldContext_Sighting_SeenAtLat(ctx context.Context,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Date does not have child fields")
+			return nil, errors.New("field of type Float does not have child fields")
 		},
 	}
 	return fc, nil
@@ -1642,9 +1642,9 @@ func (ec *executionContext) _Sighting_SeenAtLon(ctx context.Context, field graph
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(float64)
 	fc.Result = res
-	return ec.marshalNDate2string(ctx, field.Selections, res)
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Sighting_SeenAtLon(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1654,7 +1654,7 @@ func (ec *executionContext) fieldContext_Sighting_SeenAtLon(ctx context.Context,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Date does not have child fields")
+			return nil, errors.New("field of type Float does not have child fields")
 		},
 	}
 	return fc, nil
@@ -1864,7 +1864,7 @@ func (ec *executionContext) _TigerData_dateOfBirth(ctx context.Context, field gr
 	}
 	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNDate2string(ctx, field.Selections, res)
+	return ec.marshalNDateTime2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_TigerData_dateOfBirth(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1874,7 +1874,7 @@ func (ec *executionContext) fieldContext_TigerData_dateOfBirth(ctx context.Conte
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Date does not have child fields")
+			return nil, errors.New("field of type DateTime does not have child fields")
 		},
 	}
 	return fc, nil
@@ -4775,12 +4775,12 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNDate2string(ctx context.Context, v interface{}) (string, error) {
+func (ec *executionContext) unmarshalNDateTime2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNDate2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+func (ec *executionContext) marshalNDateTime2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	res := graphql.MarshalString(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -4788,6 +4788,21 @@ func (ec *executionContext) marshalNDate2string(ctx context.Context, sel ast.Sel
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNFloat2float64(ctx context.Context, v interface{}) (float64, error) {
+	res, err := graphql.UnmarshalFloatContext(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNFloat2float64(ctx context.Context, sel ast.SelectionSet, v float64) graphql.Marshaler {
+	res := graphql.MarshalFloatContext(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return graphql.WrapContextMarshaler(ctx, res)
 }
 
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {

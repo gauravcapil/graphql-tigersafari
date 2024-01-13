@@ -43,7 +43,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, userName string, pass
 }
 
 // CreateNewTiger is the resolver for the createNewTiger field.
-func (r *mutationResolver) CreateNewTiger(ctx context.Context, userName string, name string, dateOfBirth string, lastSeen string, seenAtLat string, seenAtLon string, photo graphql.Upload) (int, error) {
+func (r *mutationResolver) CreateNewTiger(ctx context.Context, userName string, name string, dateOfBirth string, lastSeen string, seenAtLat float64, seenAtLon float64, photo graphql.Upload) (int, error) {
 	if err := auth.Authenticate(ctx); err != nil {
 		return 0, err
 	}
@@ -72,7 +72,7 @@ func (r *mutationResolver) CreateNewTiger(ctx context.Context, userName string, 
 }
 
 // CreateNewSighting is the resolver for the createNewSighting field.
-func (r *mutationResolver) CreateNewSighting(ctx context.Context, userName string, name string, seenAt string, seenAtLat string, seenAtLon string, photo graphql.Upload) (int, error) {
+func (r *mutationResolver) CreateNewSighting(ctx context.Context, userName string, name string, seenAt string, seenAtLat float64, seenAtLon float64, photo graphql.Upload) (int, error) {
 	if err := auth.Authenticate(ctx); err != nil {
 		return 0, err
 	}

@@ -1,16 +1,16 @@
 # GraphQL schema example
 #
 # https://gqlgen.com/getting-started/
-scalar Date
+scalar DateTime
 scalar Upload
 
   
 type Sighting {
   id: Int!
   TigerId: Int!
-  SeenAt: Date!
-  SeenAtLat: Date!
-  SeenAtLon: Date!
+  SeenAt: DateTime!
+  SeenAtLat: Float!
+  SeenAtLon: Float!
   PhotoLocation: String!
 }
 
@@ -18,7 +18,7 @@ type TigerData {
   id: Int!
   userName: String!
   name: String!
-  dateOfBirth: Date!
+  dateOfBirth: DateTime!
   Sightings: [Sighting]!
 }
 
@@ -53,15 +53,15 @@ type Mutation {
   createUser(userName: String!, password: String!, email: String!): UserData!
   createNewTiger(userName: String!,
                   name: String!,
-                  dateOfBirth: Date!,
-                  lastSeen: Date!,
-                  seenAtLat: String!,
-                  seenAtLon: String!,
+                  dateOfBirth: DateTime!,
+                  lastSeen: DateTime!,
+                  seenAtLat: Float!,
+                  seenAtLon: Float!,
                   photo: Upload!): Int!
   createNewSighting(userName: String!,
                   name: String!,
-                  seenAt: Date!,
-                  seenAtLat: String!,
-                  seenAtLon: String!
+                  seenAt: DateTime!,
+                  seenAtLat: Float!,
+                  seenAtLon: Float!,
                   photo: Upload!): Int!
 }

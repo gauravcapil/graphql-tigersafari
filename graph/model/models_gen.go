@@ -16,12 +16,12 @@ type Query struct {
 }
 
 type Sighting struct {
-	ID            int    `json:"id"`
-	TigerID       int    `json:"TigerId"`
-	SeenAt        string `json:"SeenAt"`
-	SeenAtLat     string `json:"SeenAtLat"`
-	SeenAtLon     string `json:"SeenAtLon"`
-	PhotoLocation string `json:"PhotoLocation"`
+	ID            int     `json:"id" gorm:"primary_key"`
+	TigerID       int     `json:"TigerId"`
+	SeenAt        string  `json:"SeenAt"`
+	SeenAtLat     float64 `json:"SeenAtLat"`
+	SeenAtLon     float64 `json:"SeenAtLon"`
+	PhotoLocation string  `json:"PhotoLocation"`
 }
 
 type TigerData struct {
