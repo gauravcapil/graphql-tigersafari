@@ -12,6 +12,7 @@ import (
 
 	"gaurav.kapil/tigerhall/auth"
 	"gaurav.kapil/tigerhall/dbutils"
+	"gaurav.kapil/tigerhall/fileutils"
 	"gaurav.kapil/tigerhall/graph/model"
 	"github.com/99designs/gqlgen/graphql"
 )
@@ -47,7 +48,7 @@ func (r *mutationResolver) CreateNewTiger(ctx context.Context, userName string, 
 	if err := auth.Authenticate(ctx); err != nil {
 		return 0, err
 	}
-	photolink := name + "_" + lastSeen
+	photolink := fileutils.Generatephotofilename(name, lastSeen)
 	value := dbutils.DbConn.Create(&model.TigerData{
 		UserName:    userName,
 		Name:        name,
@@ -62,7 +63,7 @@ func (r *mutationResolver) CreateNewTiger(ctx context.Context, userName string, 
 	if readErr != nil {
 		fmt.Printf("error from file %v", readErr)
 	}
-	fileName := dbutils.GetPhotoDir() + "/" + photolink
+	fileName := dbutils.GetPhotoDir() + "\\" + photolink
 	fileErr := ioutil.WriteFile(fileName, stream, 0644)
 	if fileErr != nil {
 		fmt.Printf("file err %v", fileErr)
@@ -78,8 +79,8 @@ func (r *mutationResolver) CreateNewSighting(ctx context.Context, userName strin
 	}
 	result := model.TigerData{}
 	dbutils.DbConn.Where(model.TigerData{Name: name}).First(&result)
-	photolink := name + "_" + seenAt
-	value := dbutils.DbConn.Create(&model.Sighting{TigerID: result.ID, SeenAt: seenAt, SeenAtLat: seenAtLat, SeenAtLon: seenAtLon, PhotoLocation: dbutils.PhotoFolder + photolink})
+	photolink := fileutils.Generatephotofilename(name, seenAt)
+	value := dbutils.DbConn.Create(&model.Sighting{TigerID: result.ID, SeenAt: seenAt, SeenAtLat: seenAtLat, SeenAtLon: seenAtLon, PhotoLocation: dbutils.PhotoFolder + "/" + photolink})
 	log.Printf("about to upload the file")
 	stream, readErr := ioutil.ReadAll(photo.File)
 	if readErr != nil {
