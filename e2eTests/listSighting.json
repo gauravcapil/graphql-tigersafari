@@ -1,0 +1,1 @@
+{"query":"query {\n  listAllSightings (tigerId: TIGERID) {\n    SeenAt\n    SeenAtLat\n    SeenAtLon\n    id\n    PhotoLocation\n  }\n}"}

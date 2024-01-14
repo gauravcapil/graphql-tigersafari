@@ -94,6 +94,10 @@ func (r *mutationResolver) CreateNewSighting(ctx context.Context, userName strin
 	_, km := haversine.Distance(oldCoordinates, newCoordinates)
 
 	log.Printf("The tiger is seen at : %f kms away", km)
+	if km < dbutils.MinDistanceToConsider {
+		return 0, fmt.Errorf("this Sightings was %f km from previous sighting,"+
+			"and anything less than %f kms is ignored.", km, dbutils.MinDistanceToConsider)
+	}
 	photolink := utils.Generatephotofilename(name, seenAt)
 	value := dbutils.DbConn.Create(&model.Sighting{TigerID: result.ID, SeenAt: seenAt, SeenAtLat: seenAtLat, SeenAtLon: seenAtLon, PhotoLocation: dbutils.PhotoFolder + "/" + photolink})
 	log.Printf("about to upload the file")

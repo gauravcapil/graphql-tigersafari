@@ -7,12 +7,14 @@
 do
 	tigername=$( echo $line | awk -F\| '{print $NF}' | sed "s;\";;g")
 	sightingreported=$( echo $line | awk -F\| '{print $1}' | sed "s;\";;g")
-	echo tiger to check sightng value: $tigername, reported last sighting was: $sightingreported
 	sightingposted=$(cat lastsightingposted_$tigername)
+	echo tiger to check sightng value: $tigername, reported last sighting was: $sightingreported, posted: $sightingposted
 	if [[ $sightingposted != $sightingreported ]]
 	then
 		echo "Error: Sighting reported are incorrect for $tigername"
 		exit 1
 	fi
 done
+
+rm lastsightingposted_*
 

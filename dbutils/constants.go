@@ -3,6 +3,7 @@ package dbutils
 import "os"
 
 var PhotoFolder = "photos"
+var MinDistanceToConsider = 5.0
 
 func GetPhotoDir() string {
 	wd, _ := os.Getwd()
