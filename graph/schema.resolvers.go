@@ -97,10 +97,15 @@ func (r *mutationResolver) CreateNewSighting(ctx context.Context, userName strin
 }
 
 // ListTigers is the resolver for the listTigers field.
-func (r *queryResolver) ListTigers(ctx context.Context, offset *int, limit *int) ([]*model.TigerData, error) {
-	result := []*model.TigerData{}
+func (r *queryResolver) ListTigers(ctx context.Context, offset *int, limit *int) ([]*model.TigerDataResponse, error) {
 	dbutils.SetDefaults(&offset, &limit)
-	dbutils.DbConn.Offset(*offset).Limit(*limit).Find(&result)
+	query := fmt.Sprintf("select tiger_id,seen_at,seen_at_lat,seen_at_lon, photo_location, user_name, name, date_of_birth"+
+		" from (select distinct on (s.tiger_id) * from sightings s order by s.tiger_id, s.seen_at desc)"+
+		" join tiger_data t on t.id = tiger_id limit %d offset %d;", *limit, *offset)
+	log.Println(query)
+	result := []*model.TigerDataResponse{}
+	tx := dbutils.DbConn.Raw(query)
+	tx.Scan(&result)
 	log.Printf("listing: %d", len(result))
 	return result, nil
 }

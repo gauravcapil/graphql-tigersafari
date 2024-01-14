@@ -10,7 +10,7 @@ func GetPhotoDir() string {
 }
 
 var Offset = 0
-var Limit = -1
+var Limit = 2048
 
 func SetDefaults(offset **int, limit **int) {
 	if *offset == nil {

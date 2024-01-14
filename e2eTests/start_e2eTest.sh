@@ -1,0 +1,9 @@
+./test_create_user.sh
+./test_create_tiger.sh
+./test_create_tiger_fail.sh
+./test_create_tiger2.sh
+./test_create_new_sighting.sh
+./test_list_sighting.sh
+./test_list_tigers.sh
+./test_login.sh
+./test_login_fail.sh

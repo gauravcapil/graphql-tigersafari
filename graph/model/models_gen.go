@@ -32,6 +32,18 @@ type TigerData struct {
 	Sightings   []*Sighting `json:"Sightings"  gorm:"foreignKey:TigerID;references:ID"`
 }
 
+type TigerDataResponse struct {
+	TigerID       int     `json:"TigerID"`
+	SeenAt        string  `json:"SeenAt"`
+	SeenAtLat     float64 `json:"SeenAtLat"`
+	SeenAtLon     float64 `json:"SeenAtLon"`
+	PhotoLocation string  `json:"PhotoLocation"`
+	UserName      string  `json:"UserName"`
+	Name          string  `json:"Name"`
+	DateOfBirth   string  `json:"DateOfBirth"`
+}
+
+
 type UserData struct {
 	ID       int    `json:"id"  gorm:"primary_key"`
 	UserName string `json:"userName"  gorm:"uniqueIndex"`

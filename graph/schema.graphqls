@@ -4,6 +4,18 @@
 scalar DateTime
 scalar Upload
 
+type TigerDataResponse {
+	TigerID      : Int!
+	SeenAt       : DateTime!
+	SeenAtLat    : Float!
+	SeenAtLon    : Float!
+	PhotoLocation: String!
+	UserName     : String!
+	Name         : String!
+	DateOfBirth  : String!
+}
+
+
   
 type Sighting {
   id: Int!
@@ -24,7 +36,7 @@ type TigerData {
 
 
 type Query {
-  listTigers(offset: Int,limit: Int): [TigerData]!
+  listTigers(offset: Int,limit: Int): [TigerDataResponse]!
   listAllSightings(tigerId: Int!,offset: Int,limit: Int): [Sighting]!
   login(userName: String!, password: String): LoginData!
 }

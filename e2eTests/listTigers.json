@@ -1,1 +1,1 @@
-{"query":"query {\n  listTigers{\n    userName\n    dateOfBirth\n    id\n    Sightings {\n      SeenAt\n    }\n    name\n  }\n}"}
+{"query":"query {\n  listTigers{\n    UserName\n    DateOfBirth\n    TigerID\n    SeenAt\n    Name\n  }\n}"}
