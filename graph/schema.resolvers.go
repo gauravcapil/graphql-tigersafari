@@ -12,9 +12,12 @@ import (
 
 	"gaurav.kapil/tigerhall/auth"
 	"gaurav.kapil/tigerhall/dbutils"
-	"gaurav.kapil/tigerhall/fileutils"
 	"gaurav.kapil/tigerhall/graph/model"
+	"gaurav.kapil/tigerhall/utils"
 	"github.com/99designs/gqlgen/graphql"
+	"gorm.io/gorm/clause"
+
+	"github.com/umahmood/haversine"
 )
 
 // CreateUser is the resolver for the createUser field.
@@ -48,7 +51,7 @@ func (r *mutationResolver) CreateNewTiger(ctx context.Context, userName string, 
 	if err := auth.Authenticate(ctx); err != nil {
 		return 0, err
 	}
-	photolink := fileutils.Generatephotofilename(name, lastSeen)
+	photolink := utils.Generatephotofilename(name, lastSeen)
 	value := dbutils.DbConn.Create(&model.TigerData{
 		UserName:    userName,
 		Name:        name,
@@ -77,9 +80,21 @@ func (r *mutationResolver) CreateNewSighting(ctx context.Context, userName strin
 	if err := auth.Authenticate(ctx); err != nil {
 		return 0, err
 	}
+
+	newCoordinates := haversine.Coord{Lat: seenAtLat, Lon: seenAtLon}
+
 	result := model.TigerData{}
 	dbutils.DbConn.Where(model.TigerData{Name: name}).First(&result)
-	photolink := fileutils.Generatephotofilename(name, seenAt)
+	lastSeetAtresult := model.Sighting{}
+	dbutils.DbConn.Where(model.Sighting{TigerID: result.ID}).
+		Order(clause.OrderByColumn{Column: clause.Column{Name: "seen_at"}, Desc: true}).First(&lastSeetAtresult)
+
+	oldCoordinates := haversine.Coord{Lat: lastSeetAtresult.SeenAtLat, Lon: lastSeetAtresult.SeenAtLon}
+
+	_, km := haversine.Distance(oldCoordinates, newCoordinates)
+
+	log.Printf("The tiger is seen at : %f kms away", km)
+	photolink := utils.Generatephotofilename(name, seenAt)
 	value := dbutils.DbConn.Create(&model.Sighting{TigerID: result.ID, SeenAt: seenAt, SeenAtLat: seenAtLat, SeenAtLon: seenAtLon, PhotoLocation: dbutils.PhotoFolder + "/" + photolink})
 	log.Printf("about to upload the file")
 	stream, readErr := ioutil.ReadAll(photo.File)

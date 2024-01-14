@@ -5,6 +5,7 @@ go 1.21.6
 require (
 	github.com/99designs/gqlgen v0.17.42
 	github.com/go-chi/chi v1.5.5
+	github.com/umahmood/haversine v0.0.0-20151105152445-808ab04add26
 	github.com/vektah/gqlparser/v2 v2.5.10
 	gorm.io/driver/postgres v1.5.4
 	gorm.io/gorm v1.25.5
