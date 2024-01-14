@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/smtp"
+	"os"
 
 	"gaurav.kapil/tigerhall/dbutils"
 	"gaurav.kapil/tigerhall/graph/model"
@@ -11,9 +12,10 @@ import (
 )
 
 func getEmail(username string) string {
-	result := model.UserData{}
+	result := []*model.UserData{}
 	dbutils.DbConn.Where(&model.UserData{UserName: username}).First(&result)
-	return result.Email
+
+	return result[0].Email
 }
 
 func SendNotificationTo(sighting *models.MailData) {
@@ -22,18 +24,25 @@ func SendNotificationTo(sighting *models.MailData) {
 	emailAddress := getEmail(sighting.User)
 
 	to := []string{emailAddress}
+	msg := []byte(fmt.Sprintf("To: %s\r\n"+
 
-	msg := []byte("To: " + emailAddress + "\r\n" +
-		"Subject: New Sighting Alert\r\n" +
-		"\r\n" +
-		fmt.Sprintf("%v", sighting.Sighting) +
-		"\r\n")
+		"Subject: New Sighting for tiger id: %d\r\n"+
 
-	err := smtp.SendMail("smtp.gmail.com:587", auth, "john.doe@gmail.com", to, msg)
+		"\r\n"+
+
+		"The tiger was again seen at :%s,\r\n Location (lat, long): %f, %f, \r\nthe picture proof can be found at http://localhost:%s/%s", emailAddress,
+		sighting.Sighting.TigerID,
+		sighting.Sighting.SeenAt,
+		sighting.Sighting.SeenAtLat,
+		sighting.Sighting.SeenAtLon,
+		os.Getenv("PORT"),
+		sighting.Sighting.PhotoLocation) + "\r\n")
+	log.Printf("mail body: %s", msg)
+	err := smtp.SendMail("smtp.gmail.com:587", auth, "tigerhallkittens@gmail.com", to, msg)
 
 	if err != nil {
 
-		log.Fatal(err)
+		log.Printf("the email was not sent due to error:%s", err.Error())
 
 	}
 
