@@ -15,6 +15,7 @@ run initialize_postgres.sh
 ##PRE-REQUISITES:
 Docker for desktop should me installed as we will be running a containerized postgres for this project.
 Follow: https://docs.docker.com/desktop/install/windows-install/ for necessary actions
+For e2e testing we required "jq" install using apt-get install jq
 
 ##To CONFIGURE PORTS AND DB CREDENTIALS:
 open and configure appropriate values in config.cfg
@@ -22,6 +23,7 @@ open and configure appropriate values in config.cfg
 ##To Force migration for the first time
 ( to setup the tables, export MIGRATE_1=1)
 ( to truncate the tables, export MIGRATE_DROPALL=1)
+More migration scripts can be enabled with addition of these env tags and implementing the sequence in the same way for future
 
 ##To RUN:
 
@@ -30,3 +32,6 @@ using moba-xterm or cygwin:
 
 ##To change and update the schema ( if required )
 ./updateSchema.sh
+
+##To run an e2e test you can use the scripts in e2eTests folder
+./start_e2eTests.sh

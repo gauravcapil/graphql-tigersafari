@@ -18,6 +18,9 @@ curl -H 'Authorization: '$(./test_login.sh | jq ".data.login.token" | sed "s;\";
   -F "operations=$(cat createSightingTigerNew.json)" \
       -F map='{ "0": ["variables.photo"] }' \
             -F 0=@test_pic.jpg
+
+echo "adding last seen at in a file for checking list tiger api later"
+echo $newd>"lastsightingposted_"$TigerID
 done
 
 
