@@ -12,7 +12,9 @@ import (
 
 	"gaurav.kapil/tigerhall/auth"
 	"gaurav.kapil/tigerhall/dbutils"
+	"gaurav.kapil/tigerhall/emailserver"
 	"gaurav.kapil/tigerhall/graph/model"
+	"gaurav.kapil/tigerhall/models"
 	"gaurav.kapil/tigerhall/utils"
 	"github.com/99designs/gqlgen/graphql"
 	"gorm.io/gorm/clause"
@@ -112,6 +114,7 @@ func (r *mutationResolver) CreateNewSighting(ctx context.Context, userName strin
 	}
 	log.Printf("file writted with name: %s", fileName)
 	newSightingID := value.Statement.Model.(*model.Sighting).ID
+	emailserver.Notify(&models.MailData{User: result.UserName, Sighting: *value.Statement.Model.(*model.Sighting)})
 	return newSightingID, fileErr
 }
 

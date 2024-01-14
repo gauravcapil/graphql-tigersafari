@@ -35,3 +35,6 @@ using moba-xterm or cygwin:
 
 ##To run an e2e test you can use the scripts in e2eTests folder
 ./start_e2eTests.sh
+
+#For email via gmail support, follow:
+https://support.google.com/accounts/answer/185833

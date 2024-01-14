@@ -9,6 +9,7 @@ import (
 
 	"gaurav.kapil/tigerhall/auth"
 	"gaurav.kapil/tigerhall/dbutils"
+	"gaurav.kapil/tigerhall/emailserver"
 	"gaurav.kapil/tigerhall/graph"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -25,6 +26,7 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
+	emailserver.StartEmailServer()
 
 	router := chi.NewRouter()
 
