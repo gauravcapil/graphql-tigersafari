@@ -11,6 +11,28 @@ import (
 	"gaurav.kapil/tigerhall/models"
 )
 
+var Notifier notifier
+var Sender sender
+
+func Initialize() {
+	Notifier = new(TigerNotifier)
+	Sender = new(TigerSender)
+}
+
+type notifier interface {
+	Notify(sighting *models.MailData)
+}
+
+type TigerNotifier struct {
+}
+
+type sender interface {
+	SendNotificationTo(sighting *models.MailData)
+}
+
+type TigerSender struct {
+}
+
 func getEmail(username string) string {
 	result := []*model.UserData{}
 	dbutils.DbConn.Where(&model.UserData{UserName: username}).First(&result)
@@ -18,7 +40,7 @@ func getEmail(username string) string {
 	return result[0].Email
 }
 
-func SendNotificationTo(sighting *models.MailData) {
+func (TigerSender) SendNotificationTo(sighting *models.MailData) {
 	auth := smtp.PlainAuth("", "tigerhallkittens@gmail.com", "uhhmsaswcwpccsdg", "smtp.gmail.com")
 
 	emailAddress := getEmail(sighting.User)
@@ -48,17 +70,20 @@ func SendNotificationTo(sighting *models.MailData) {
 
 }
 
-var mailchan chan *models.MailData
+var Mailchan chan *models.MailData
+var IsReady chan bool
 
 func StartEmailServer() {
-	mailchan = make(chan *models.MailData, 100)
+	Mailchan = make(chan *models.MailData, 100)
+	IsReady = make(chan bool)
 	go func() {
 		for {
-			go SendNotificationTo(<-mailchan)
+			IsReady <- true
+			go Sender.SendNotificationTo(<-Mailchan)
 		}
 	}()
 }
 
-func Notify(sighting *models.MailData) {
-	mailchan <- sighting
+func (TigerNotifier) Notify(sighting *models.MailData) {
+	Mailchan <- sighting
 }

@@ -114,7 +114,7 @@ func (r *mutationResolver) CreateNewSighting(ctx context.Context, userName strin
 	}
 	log.Printf("file writted with name: %s", fileName)
 	newSightingID := value.Statement.Model.(*model.Sighting).ID
-	emailserver.Notify(&models.MailData{User: result.UserName, Sighting: *value.Statement.Model.(*model.Sighting)})
+	emailserver.Notifier.Notify(&models.MailData{User: result.UserName, Sighting: *value.Statement.Model.(*model.Sighting)})
 	return newSightingID, fileErr
 }
 

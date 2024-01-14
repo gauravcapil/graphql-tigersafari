@@ -26,15 +26,22 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
+
+	// Start email server
+	emailserver.Initialize()
 	emailserver.StartEmailServer()
+	<-emailserver.IsReady
 
 	router := chi.NewRouter()
 
+	// Adding auth middleware to inject the context of the header to be used furthers
 	router.Use(auth.Middleware())
 
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	// Playground for checking API calls
 	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	router.Handle("/query", srv)
+	// photo server for sharing evidence
 	router.Handle("/photos/*", http.StripPrefix("/photos/", http.FileServer(http.Dir(dbutils.GetPhotoDir()))))
 
 	log.Printf("connect to http://localhost:%s/playgrounds for GraphQL playground", port)
