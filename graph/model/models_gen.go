@@ -16,7 +16,7 @@ type Query struct {
 }
 
 type Sighting struct {
-	ID            int     `json:"id" gorm:"primary_key"`
+	ID            int     `json:"id"`
 	TigerID       int     `json:"TigerId"`
 	SeenAt        string  `json:"SeenAt"`
 	SeenAtLat     float64 `json:"SeenAtLat"`
@@ -25,11 +25,11 @@ type Sighting struct {
 }
 
 type TigerData struct {
-	ID          int         `json:"id" gorm:"primary_key"`
+	ID          int         `json:"id"`
 	UserName    string      `json:"userName"`
-	Name        string      `json:"name"  gorm:"uniqueIndex"`
+	Name        string      `json:"name"`
 	DateOfBirth string      `json:"dateOfBirth"`
-	Sightings   []*Sighting `json:"Sightings"  gorm:"foreignKey:TigerID;references:ID"`
+	Sightings   []*Sighting `json:"Sightings"`
 }
 
 type TigerDataResponse struct {
@@ -43,15 +43,14 @@ type TigerDataResponse struct {
 	DateOfBirth   string  `json:"DateOfBirth"`
 }
 
-
 type UserData struct {
-	ID       int    `json:"id"  gorm:"primary_key"`
-	UserName string `json:"userName"  gorm:"uniqueIndex"`
-	Email    string `json:"email" gorm:"uniqueIndex"`
+	ID       int    `json:"id"`
+	UserName string `json:"userName"`
+	Email    string `json:"email"`
 }
 
 type UserDataWithPassword struct {
-	ID       int    `json:"id"  gorm:"primary_key"`
-	UserName string `json:"userName"  gorm:"uniqueIndex"`
+	ID       int    `json:"id"`
+	UserName string `json:"userName"`
 	Password string `json:"password"`
 }

@@ -10,16 +10,15 @@ import (
 	"io/ioutil"
 	"log"
 
-	"gaurav.kapil/tigerhall/auth"
-	"gaurav.kapil/tigerhall/dbutils"
-	"gaurav.kapil/tigerhall/emailserver"
-	"gaurav.kapil/tigerhall/graph/model"
-	"gaurav.kapil/tigerhall/models"
-	"gaurav.kapil/tigerhall/utils"
+	"gaurav.kapil/graphql-tigersafari/auth"
+	"gaurav.kapil/graphql-tigersafari/dbutils"
+	"gaurav.kapil/graphql-tigersafari/emailserver"
+	"gaurav.kapil/graphql-tigersafari/graph/model"
+	"gaurav.kapil/graphql-tigersafari/models"
+	"gaurav.kapil/graphql-tigersafari/utils"
 	"github.com/99designs/gqlgen/graphql"
-	"gorm.io/gorm/clause"
-
 	"github.com/umahmood/haversine"
+	"gorm.io/gorm/clause"
 )
 
 // CreateUser is the resolver for the createUser field.

@@ -6,9 +6,9 @@ import (
 	"net/smtp"
 	"os"
 
-	"gaurav.kapil/tigerhall/dbutils"
-	"gaurav.kapil/tigerhall/graph/model"
-	"gaurav.kapil/tigerhall/models"
+	"gaurav.kapil/graphql-tigersafari/dbutils"
+	"gaurav.kapil/graphql-tigersafari/graph/model"
+	"gaurav.kapil/graphql-tigersafari/models"
 )
 
 var Notifier notifier
@@ -41,7 +41,7 @@ func getEmail(username string) string {
 }
 
 func (TigerSender) SendNotificationTo(sighting *models.MailData) {
-	auth := smtp.PlainAuth("", "tigerhallkittens@gmail.com", "uhhmsaswcwpccsdg", "smtp.gmail.com")
+	auth := smtp.PlainAuth("", "graphql-tigersafarikittens@gmail.com", "uhhmsaswcwpccsdg", "smtp.gmail.com")
 
 	emailAddress := getEmail(sighting.User)
 
@@ -60,7 +60,7 @@ func (TigerSender) SendNotificationTo(sighting *models.MailData) {
 		os.Getenv("PORT"),
 		sighting.Sighting.PhotoLocation) + "\r\n")
 	log.Printf("mail body: %s", msg)
-	err := smtp.SendMail("smtp.gmail.com:587", auth, "tigerhallkittens@gmail.com", to, msg)
+	err := smtp.SendMail("smtp.gmail.com:587", auth, "graphql-tigersafarikittens@gmail.com", to, msg)
 
 	if err != nil {
 

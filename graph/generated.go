@@ -12,7 +12,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"gaurav.kapil/tigerhall/graph/model"
+	"gaurav.kapil/graphql-tigersafari/graph/model"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	gqlparser "github.com/vektah/gqlparser/v2"
@@ -1032,7 +1032,7 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.UserData)
 	fc.Result = res
-	return ec.marshalNUserData2ᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐUserData(ctx, field.Selections, res)
+	return ec.marshalNUserData2ᚖgauravᚗkapilᚋgraphql-tigersafariᚋgraphᚋmodelᚐUserData(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1205,7 +1205,7 @@ func (ec *executionContext) _Query_listTigers(ctx context.Context, field graphql
 	}
 	res := resTmp.([]*model.TigerDataResponse)
 	fc.Result = res
-	return ec.marshalNTigerDataResponse2ᚕᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐTigerDataResponse(ctx, field.Selections, res)
+	return ec.marshalNTigerDataResponse2ᚕᚖgauravᚗkapilᚋgraphql-tigersafariᚋgraphᚋmodelᚐTigerDataResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_listTigers(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1278,7 +1278,7 @@ func (ec *executionContext) _Query_listAllSightings(ctx context.Context, field g
 	}
 	res := resTmp.([]*model.Sighting)
 	fc.Result = res
-	return ec.marshalNSighting2ᚕᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐSighting(ctx, field.Selections, res)
+	return ec.marshalNSighting2ᚕᚖgauravᚗkapilᚋgraphql-tigersafariᚋgraphᚋmodelᚐSighting(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_listAllSightings(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1347,7 +1347,7 @@ func (ec *executionContext) _Query_login(ctx context.Context, field graphql.Coll
 	}
 	res := resTmp.(*model.LoginData)
 	fc.Result = res
-	return ec.marshalNLoginData2ᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐLoginData(ctx, field.Selections, res)
+	return ec.marshalNLoginData2ᚖgauravᚗkapilᚋgraphql-tigersafariᚋgraphᚋmodelᚐLoginData(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_login(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1981,7 +1981,7 @@ func (ec *executionContext) _TigerData_Sightings(ctx context.Context, field grap
 	}
 	res := resTmp.([]*model.Sighting)
 	fc.Result = res
-	return ec.marshalNSighting2ᚕᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐSighting(ctx, field.Selections, res)
+	return ec.marshalNSighting2ᚕᚖgauravᚗkapilᚋgraphql-tigersafariᚋgraphᚋmodelᚐSighting(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_TigerData_Sightings(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5319,11 +5319,11 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) marshalNLoginData2gauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐLoginData(ctx context.Context, sel ast.SelectionSet, v model.LoginData) graphql.Marshaler {
+func (ec *executionContext) marshalNLoginData2gauravᚗkapilᚋgraphql-tigersafariᚋgraphᚋmodelᚐLoginData(ctx context.Context, sel ast.SelectionSet, v model.LoginData) graphql.Marshaler {
 	return ec._LoginData(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNLoginData2ᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐLoginData(ctx context.Context, sel ast.SelectionSet, v *model.LoginData) graphql.Marshaler {
+func (ec *executionContext) marshalNLoginData2ᚖgauravᚗkapilᚋgraphql-tigersafariᚋgraphᚋmodelᚐLoginData(ctx context.Context, sel ast.SelectionSet, v *model.LoginData) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -5333,7 +5333,7 @@ func (ec *executionContext) marshalNLoginData2ᚖgauravᚗkapilᚋtigerhallᚋgr
 	return ec._LoginData(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNSighting2ᚕᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐSighting(ctx context.Context, sel ast.SelectionSet, v []*model.Sighting) graphql.Marshaler {
+func (ec *executionContext) marshalNSighting2ᚕᚖgauravᚗkapilᚋgraphql-tigersafariᚋgraphᚋmodelᚐSighting(ctx context.Context, sel ast.SelectionSet, v []*model.Sighting) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -5357,7 +5357,7 @@ func (ec *executionContext) marshalNSighting2ᚕᚖgauravᚗkapilᚋtigerhallᚋ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOSighting2ᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐSighting(ctx, sel, v[i])
+			ret[i] = ec.marshalOSighting2ᚖgauravᚗkapilᚋgraphql-tigersafariᚋgraphᚋmodelᚐSighting(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -5386,7 +5386,7 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNTigerDataResponse2ᚕᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐTigerDataResponse(ctx context.Context, sel ast.SelectionSet, v []*model.TigerDataResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNTigerDataResponse2ᚕᚖgauravᚗkapilᚋgraphql-tigersafariᚋgraphᚋmodelᚐTigerDataResponse(ctx context.Context, sel ast.SelectionSet, v []*model.TigerDataResponse) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -5410,7 +5410,7 @@ func (ec *executionContext) marshalNTigerDataResponse2ᚕᚖgauravᚗkapilᚋtig
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOTigerDataResponse2ᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐTigerDataResponse(ctx, sel, v[i])
+			ret[i] = ec.marshalOTigerDataResponse2ᚖgauravᚗkapilᚋgraphql-tigersafariᚋgraphᚋmodelᚐTigerDataResponse(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -5439,11 +5439,11 @@ func (ec *executionContext) marshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋg
 	return res
 }
 
-func (ec *executionContext) marshalNUserData2gauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐUserData(ctx context.Context, sel ast.SelectionSet, v model.UserData) graphql.Marshaler {
+func (ec *executionContext) marshalNUserData2gauravᚗkapilᚋgraphql-tigersafariᚋgraphᚋmodelᚐUserData(ctx context.Context, sel ast.SelectionSet, v model.UserData) graphql.Marshaler {
 	return ec._UserData(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNUserData2ᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐUserData(ctx context.Context, sel ast.SelectionSet, v *model.UserData) graphql.Marshaler {
+func (ec *executionContext) marshalNUserData2ᚖgauravᚗkapilᚋgraphql-tigersafariᚋgraphᚋmodelᚐUserData(ctx context.Context, sel ast.SelectionSet, v *model.UserData) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -5748,7 +5748,7 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	return res
 }
 
-func (ec *executionContext) marshalOSighting2ᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐSighting(ctx context.Context, sel ast.SelectionSet, v *model.Sighting) graphql.Marshaler {
+func (ec *executionContext) marshalOSighting2ᚖgauravᚗkapilᚋgraphql-tigersafariᚋgraphᚋmodelᚐSighting(ctx context.Context, sel ast.SelectionSet, v *model.Sighting) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -5771,7 +5771,7 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	return res
 }
 
-func (ec *executionContext) marshalOTigerDataResponse2ᚖgauravᚗkapilᚋtigerhallᚋgraphᚋmodelᚐTigerDataResponse(ctx context.Context, sel ast.SelectionSet, v *model.TigerDataResponse) graphql.Marshaler {
+func (ec *executionContext) marshalOTigerDataResponse2ᚖgauravᚗkapilᚋgraphql-tigersafariᚋgraphᚋmodelᚐTigerDataResponse(ctx context.Context, sel ast.SelectionSet, v *model.TigerDataResponse) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

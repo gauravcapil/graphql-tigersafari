@@ -1,7 +1,7 @@
 # using sh in windows with the help of moba xterm
 
 #initializing mod file
-go mod init gaurav.kapil/tigerhall
+go mod init gaurav.kapil/graphql-tigersafari
 
 # getting dependencies for project bootstrapping
 go get github.com/99designs/gqlgen

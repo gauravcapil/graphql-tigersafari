@@ -1,4 +1,4 @@
-module gaurav.kapil/tigerhall
+module gaurav.kapil/graphql-tigersafari
 
 go 1.21.6
 

@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"gaurav.kapil/tigerhall/dbutils"
-	"gaurav.kapil/tigerhall/graph/model"
+	"gaurav.kapil/graphql-tigersafari/dbutils"
+	"gaurav.kapil/graphql-tigersafari/graph/model"
 )
 
 func Authenticate(ctx context.Context) error {

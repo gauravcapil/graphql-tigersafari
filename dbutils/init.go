@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"gaurav.kapil/tigerhall/graph/model"
+	"gaurav.kapil/graphql-tigersafari/graph/model"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

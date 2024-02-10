@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"gaurav.kapil/tigerhall/emailserver"
-	"gaurav.kapil/tigerhall/models"
+	"gaurav.kapil/graphql-tigersafari/emailserver"
+	"gaurav.kapil/graphql-tigersafari/models"
 	"github.com/stretchr/testify/require"
 )
 

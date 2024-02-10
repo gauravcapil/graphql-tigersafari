@@ -7,10 +7,10 @@ import (
 
 	"github.com/go-chi/chi"
 
-	"gaurav.kapil/tigerhall/auth"
-	"gaurav.kapil/tigerhall/dbutils"
-	"gaurav.kapil/tigerhall/emailserver"
-	"gaurav.kapil/tigerhall/graph"
+	"gaurav.kapil/graphql-tigersafari/auth"
+	"gaurav.kapil/graphql-tigersafari/dbutils"
+	"gaurav.kapil/graphql-tigersafari/emailserver"
+	"gaurav.kapil/graphql-tigersafari/graph"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 )
